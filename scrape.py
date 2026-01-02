@@ -67,28 +67,3 @@ def events_to_list(dates, events):
     for i in range(len(events)):
         compare_list.append(dates[i].get_text() + " - " + events[i].get_text())
     return compare_list
-
-# r = requests.get("https://cec.ucmerced.edu/calendar")
-
-# all_events = ""
-# compare_list = []
-# if r.status_code == 200:
-#     soup  = BeautifulSoup(r.text, 'html.parser')
-#     calendar = soup.find(class_="fullcalendar-content")
-
-#     events = calendar.find_all('h3') #Title of the event
-#     dates = calendar.find_all('a') #Date of the event
-
-#     for i in range(len(events)):
-#         all_events += dates[i].get_text() + " - " + events[i].get_text() + "\n" #For a clean file
-#         compare_list.append(dates[i].get_text() + " - " + events[i].get_text()) #list comparison
-
-
-#     with open("cec_log.txt", 'r') as file:
-#         for line_num, (file_line, list_item) in enumerate(zip(file, compare_list), 1):
-#             if file_line.strip() != list_item.strip():
-#                 print(f"Mismatch: {file_line} != {list_item}")
-
-
-#     with open("cec_log.txt", "a") as file:
-#         file.write(all_events)
