@@ -3,7 +3,7 @@ import datetime
 import asyncio
 import requests
 from bs4 import BeautifulSoup
-from scrape import *
+from ucmcalendar import *
 from key import API_KEY
 import pandas as pd
 
@@ -34,11 +34,13 @@ class Client(discord.Client):
         if message.content.startswith('hello'):
             await message.channel.send(f'Hi there {message.author}')
     
-    async def automate_check(self, url, channel, file):
+    async def automate_check(self, url, channel, file, delay_offset=0):
         channel = self.get_channel(channel)
         if  channel is None:
             print(f"Error: No channel {channel} for {url}")
             return
+
+        await asyncio.sleep(delay_offset)
 
         while not self.is_closed():
             r = request(url)
@@ -71,7 +73,7 @@ class Client(discord.Client):
         files = df['FILE']
         tasks = []
         for i in range(len(urls)):
-            task = self.loop.create_task(self.automate_check(urls[i], channels[i], files[i]))
+            task = self.loop.create_task(self.automate_check(urls[i], channels[i], files[i], delay_offset=i*60))
             tasks.append(task)
         await asyncio.gather(*tasks)
 
