@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from scrape import *
 from key import API_KEY
+import pandas as pd
 
 def check_for_changes(r, file):
     soup  = BeautifulSoup(r.text, 'html.parser')
@@ -24,8 +25,7 @@ def check_for_changes(r, file):
 class Client(discord.Client):
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
-        self.loop.create_task(self.cec_message())
-        self.loop.create_task(self.psychological_sciences_check())
+        self.loop.create_task(self.uc_merced_calendars_check())
 
     async def on_message(self, message):
         if message.author == self.user:
@@ -41,7 +41,6 @@ class Client(discord.Client):
             return
 
         while not self.is_closed():
-            await asyncio.sleep(10)
             r = request(url)
             if r is None:
                 await channel.send("Failure to find calendar for psychological Sciences")
@@ -54,20 +53,27 @@ class Client(discord.Client):
             else:
                 compiled_notables = format_text(notables)
                 await channel.send(compiled_notables)
+            await asyncio.sleep(3600)
 
-    async def  psychological_sciences_check(self):
+    async def uc_merced_calendars_check(self):
         await self.wait_until_ready()
-        url = "https://psychology.ucmerced.edu/events"
-        channel = 1456771381629812787
-        file = "logs/ps_log.txt"
-        await self.automate_check(url, channel, file)
-
-    async def cec_message(self):
-        await self.wait_until_ready()
-        channel = 1456771381629812787
-        file = "logs/cec_log.txt"
-        url  = "https://cec.ucmerced.edu/calendar"
-        await self.automate_check(url, channel, file)
+        try:
+            df = pd.read_csv("./csvs/calendars.csv")
+        except FileNotFoundError:
+            print("calendars.csv can't be found")
+            return
+        except Exception as e:
+            print("Error reading Calendar.csv: " + e)
+            return
+        
+        urls = df['URL']
+        channels = df['CHANNEL']
+        files = df['FILE']
+        tasks = []
+        for i in range(len(urls)):
+            task = self.loop.create_task(self.automate_check(urls[i], channels[i], files[i]))
+            tasks.append(task)
+        await asyncio.gather(*tasks)
 
 intents = discord.Intents.default()
 intents.message_content = True
