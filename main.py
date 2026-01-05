@@ -6,6 +6,17 @@ from bs4 import BeautifulSoup
 from ucmcalendar import *
 from key import API_KEY
 import pandas as pd
+from rssfeed import *
+
+def rss_check_for_changes(r, file):
+    soup = BeautifulSoup(r.text, 'xml')
+    items = get_items(soup)
+    events = get_list(items)
+    new_events =  is_change(events, file)
+    for new_event in new_events:
+        print(new_event)
+    log_changes(file, events)
+
 
 def check_for_changes(r, file):
     soup  = BeautifulSoup(r.text, 'html.parser')
@@ -45,7 +56,7 @@ class Client(discord.Client):
         while not self.is_closed():
             r = request(url)
             if r is None:
-                await channel.send("Failure to find calendar for psychological Sciences")
+                await channel.send(f"Failure to find calendar for {url}")
                 continue
             
             notables  = check_for_changes(r, file)
@@ -56,6 +67,8 @@ class Client(discord.Client):
                 compiled_notables = format_text(notables)
                 await channel.send(compiled_notables)
             await asyncio.sleep(3600)
+
+
 
     async def uc_merced_calendars_check(self):
         await self.wait_until_ready()
