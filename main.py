@@ -7,6 +7,7 @@ from ucmcalendar import *
 from key import API_KEY
 import pandas as pd
 from rssfeed import *
+from checksFunctions import *
 
 def rss_check_for_changes(r, file):
     soup = BeautifulSoup(r.text, 'xml')
@@ -16,7 +17,7 @@ def rss_check_for_changes(r, file):
     for new_event in new_events:
         print(new_event)
     log_changes(file, events)
-
+    return new_events
 
 def check_for_changes(r, file):
     soup  = BeautifulSoup(r.text, 'html.parser')
@@ -24,13 +25,12 @@ def check_for_changes(r, file):
     events = get_all_events(calendar)
     dates = get_all_dates(calendar)
 
-    content = prettify_events(dates, events)
     events_list = events_to_list(dates, events)
 
-    mismatches = is_changed(file, events_list)
-    log_changes(file, content)
+    new = is_change(file, events_list)
+    log_changes(file, events_list)
 
-    return is_notable(mismatches, f"{datetime.datetime.now().year}")
+    return new
 
 
 class Client(discord.Client):
