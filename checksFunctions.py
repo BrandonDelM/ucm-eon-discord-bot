@@ -1,4 +1,16 @@
 import os
+import requests
+
+def get_element(soup, element_name):
+    if soup.find_all(element_name):
+        return soup.find_all(element_name)
+    return None
+
+def request(url):
+    r = requests.get(url)
+    if r.status_code == 200:
+        return r
+    return None
 
 def is_same(event_list, compare):
     for event in event_list:

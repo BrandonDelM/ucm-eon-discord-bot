@@ -85,8 +85,10 @@ class Client(discord.Client):
         channels = df['CHANNEL']
         files = df['FILE']
         tasks = []
+        n = 0
         for i in range(len(urls)):
-            task = self.loop.create_task(self.automate_check(urls[i], channels[i], files[i], delay_offset=i*60))
+            task = self.loop.create_task(self.automate_check(urls[i], channels[i], files[i], delay_offset=i*20))
+            n += 1
             tasks.append(task)
         await asyncio.gather(*tasks)
 

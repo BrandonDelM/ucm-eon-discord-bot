@@ -37,26 +37,5 @@ def get_items(soup):
         return soup.find_all('item')
     return None
 
-r = requests.get("https://pace.ucmerced.edu/rss.xml")
+r = requests("https://pace.ucmerced.edu/rss.xml")
 rss_check_for_changes(r, "logs/rss/pace_log.txt")
-# items = soup.find_all('item')
-# events = []
-# for item in items:
-#     try:
-#         title = item.title.text
-#     except:
-#         title = None
-
-#     try:
-#         date = item.pubDate.text
-#     except:
-#         date = None
-    
-#     try:
-#         link = item.link.text
-#     except:
-#         link = None
-    
-#     events.append(f"{title}, {date}, {link}")
-# is_change("logs/rss/pace_log.txt", events)
-# log_changes("logs/rss/pace_log.txt", events)
