@@ -1,13 +1,24 @@
 import discord
-import datetime
 import asyncio
-import requests
 from bs4 import BeautifulSoup
-from ucmcalendar import *
 from key import API_KEY
 import pandas as pd
+from ics import Calendar
+
+from ucmcalendar import *
+from icscheck import *
 from rssfeed import *
 from checksFunctions import *
+
+def ics_change(r, file):
+    cal = Calendar(r.text)
+    events = get_ics_events(cal)
+    if events is not None:
+        events_list = create_ics_event_list(events)
+        new_events = is_change(file, events_list)
+        log_changes(file, events_list)
+        return new_events
+    return None
 
 def rss_changes(r, file):
     soup = BeautifulSoup(r.text, 'xml')
@@ -16,12 +27,6 @@ def rss_changes(r, file):
     new_events = is_change(file, events)
     log_changes(file, events)
     return new_events
-
-def check_for_changes(r, file, url, type):
-    if type == "calendar":
-        return calendar_changes(r, file, url)
-    elif type == "rss":
-        return rss_changes(r, file)
 
 def calendar_changes(r, file, url):
     url = url[:url.rfind("/")]
@@ -35,6 +40,39 @@ def calendar_changes(r, file, url):
     log_changes(file, events_list)
 
     return new
+
+def check_for_changes(r, file, url, type):
+    if type == "calendar":
+        return calendar_changes(r, file, url)
+    elif type == "rss":
+        return rss_changes(r, file)
+    elif type == "ics":
+        return ics_change(r, file)
+
+def is_csv_accessible(file):
+    try:
+        df = pd.read_csv(file)
+    except FileNotFoundError:
+        print(f"{file} can't be found")
+        return None
+    except Exception as e:
+        print(f"Error reading {file}: {e}")
+        return None
+    return df
+
+def get_csv_column(df, name):
+    try:
+        return df[name]
+    except:
+        return None
+
+def get_csv_columns(df):
+    urls = get_csv_column(df, 'URL')
+    channels = get_csv_column(df, 'CHANNEL')
+    mentions = get_csv_column(df, 'MENTION')
+    files = get_csv_column(df, 'FILE')
+
+    return urls, channels, mentions, files
 
 class Client(discord.Client):
     async def on_ready(self):
@@ -80,43 +118,40 @@ class Client(discord.Client):
 
     async def uc_merced_calendars_check(self):
         await self.wait_until_ready()
-        try:
-            df = pd.read_csv("./csvs/calendars.csv")
-        except FileNotFoundError:
-            print("./csv/calendars.csv can't be found")
-            return
-        except Exception as e:
-            print("Error reading ./csv/calendar.csv: " + e)
-            return
-        
-        urls = df['URL']
-        channels = df['CHANNEL']
-        files = df['FILE']
         tasks = []
         n = 0
-        type = "calendar"
-        for i in range(len(urls)):
-            task = self.loop.create_task(self.automate_check(urls[i], channels[i], files[i], type, delay_offset=i*20))
-            n += 1
-            tasks.append(task)
 
-        try:
-            df = pd.read_csv("./csvs/rss.csv")
-        except FileNotFoundError:
-            print("./csv/rss.csv can't be found")
-            return
-        except Exception as e:
-            print("Error reading ./csv/rss.csv: " + e)
-            return
-        urls = df['URL']
-        channels = df['CHANNEL']
-        mentions = df['MENTION']
-        files = df['FILE']
+        file = "./csvs/calendars.csv"
+        type = "calendar"
+        df = is_csv_accessible(file)
+        if df is not None:
+            df = is_csv_accessible(file)
+            urls, channels, mentions, files = get_csv_columns(df)
+            for i in range(len(urls)):
+                task = self.loop.create_task(self.automate_check(urls[i], channels[i], files[i], type, delay_offset=i*20))
+                n += 1
+                tasks.append(task)
+
+        file = "./csvs/ics.csv"
+        type = "ics"
+        df = is_csv_accessible(file)
+        if df is not None:
+            urls, channels, mentions, files = get_csv_columns(df)
+            for i in range(len(urls)):
+                task = self.loop.create_task(self.automate_check(urls[i], channels[i], files[i], type, delay_offset=n*20))
+                n += 1
+                tasks.append(task)
+
+        file = "./csvs/rss.csv"
         type = "rss"
-        for i in range(len(urls)):
-            task = self.loop.create_task(self.automate_check(urls[i], channels[i], files[i], type, delay_offset=n*20))
-            n += 1
-            tasks.append(task)
+        df = is_csv_accessible(file)
+        if df is not None:
+            df = is_csv_accessible(file)
+            urls, channels, mentions, files = get_csv_columns(df)
+            for i in range(len(urls)):
+                task = self.loop.create_task(self.automate_check(urls[i], channels[i], files[i], type, delay_offset=n*20))
+                n += 1
+                tasks.append(task)
 
         await asyncio.gather(*tasks)
 

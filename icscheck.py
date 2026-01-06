@@ -1,35 +1,34 @@
 import requests
-from  pathlib import Path
 from ics import Calendar
-import os
+from checksFunctions import *
 
-def events_calendar_check(url):
-    response = requests.get(url)
+# def events_calendar_check(url):
+#     response = requests.get(url)
+#     file = ""
 
-    cal = Calendar(response.text)
-    if cal:
-        events = cal.events
-        for event in events:
-            print(f"{event.begin}, {event.name}, {event.url}")
+#     cal = Calendar(response.text)
+#     if get_ics_events(cal):
+#         events = get_ics_events(cal)
+#         events_list = create_ics_event_list(events)
+#         new_event = is_change(file, events_list)
 
-def library_check(url):
-    response = requests.get(url)
+# def library_check(url):
+#     response = requests.get(url)
 
-    cal = Calendar(response.text)
-    if cal:
-        events = cal.events
-        events_list = ics_events_to_list(events)
-        compiled_events = compile_events(events)
+#     file = ""
+#     cal = Calendar(response.text)
+#     if cal:
+#         events = cal.events
+#         events_list = create_ics_event_list(events)
+#         new_events = is_change(file, events_list)
+#         log_changes(file, events)
+#         return new_events
 
-def ics_events_to_list(events):
+def get_ics_events(cal):
+    if cal.events:
+        return cal.events
+    return None
+
+def create_ics_event_list(events):
     #First time I formally did this
     return [f"{event.name}, {event.begin}, {event.url}" for event in events]
-
-def compile_events(events):
-    all_events = ""
-    for event in events:
-        all_events += f"{event.name}, {event.begin}, {event.url}\n"
-    return all_events
-
-events_calendar_check("https://events.ucmerced.edu/live/ical/events/header/All%20Events")
-# library_check("https://libcal.ucmerced.edu/ical_subscribe.php?src=p&cid=7551")
