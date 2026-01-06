@@ -1,9 +1,6 @@
 import discord
 import asyncio
-from bs4 import BeautifulSoup
 from key import API_KEY
-import pandas as pd
-from ics import Calendar
 
 from ucmcalendar import *
 from icscheck import *
