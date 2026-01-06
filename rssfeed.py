@@ -3,7 +3,7 @@ import requests
 import os
 from checksFunctions import *
 
-def get_list(items):
+def create_rss_events_list(items):
     events = []
     for item in items:
         try:

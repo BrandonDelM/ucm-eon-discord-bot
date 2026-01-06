@@ -12,24 +12,24 @@ from checksFunctions import *
 def rss_changes(r, file):
     soup = BeautifulSoup(r.text, 'xml')
     items = get_items(soup)
-    events = get_list(items)
-    new_events =  is_change(file, events)
+    events = create_rss_events_list(items)
+    new_events = is_change(file, events)
     log_changes(file, events)
     return new_events
 
-def check_for_changes(r, file, type):
+def check_for_changes(r, file, url, type):
     if type == "calendar":
-        return calendar_changes(r, file)
+        return calendar_changes(r, file, url)
     elif type == "rss":
         return rss_changes(r, file)
 
-def calendar_changes(r, file):
+def calendar_changes(r, file, url):
+    url = url[:url.rfind("/")]
     soup  = BeautifulSoup(r.text, 'html.parser')
     calendar = get_calendar(soup)
-    events = get_all_events(calendar)
-    dates = get_all_dates(calendar)
+    events, dates, links = get_calendar_event_info(calendar, url)
 
-    events_list = events_to_list(dates, events)
+    events_list = create_calendar_event_list(dates, events, links)
 
     new = is_change(file, events_list)
     log_changes(file, events_list)
@@ -62,12 +62,13 @@ class Client(discord.Client):
                 await channel.send(f"Failure to find calendar for {url}")
                 return
             
-            new_events  = check_for_changes(r, file, type)
+            new_events  = check_for_changes(r, file, url, type)
 
             new_events_text = ""
             if len(new_events) == 0:
                 new_events_text = f"No changes found for {type}: {url}"
             else:
+                new_events_text += f"Changes for {url}\n"
                 for new_event in new_events:
                     if len(f"{new_events_text}{new_event}\n") > 2000:
                         break
@@ -75,21 +76,6 @@ class Client(discord.Client):
 
             await channel.send(new_events_text)
             await asyncio.sleep(3600)
-
-    # async def automate_rss_check(self, url, channel, mention, file, delay_offset=0):
-    #     channel = self.get_channel(channel)
-    #     if channel is None:
-    #         print(f"Error: No channel {channel} for {url}")
-    #         return
-
-    #     await asyncio.sleep(delay_offset)
-
-    #     while not self.is_closed():
-    #         if r is None:
-    #             await channel.send(f"Failure to find calendar for {url}")
-    #             continue
-
-    #         new = rss_check_for_changes
 
 
     async def uc_merced_calendars_check(self):
@@ -139,17 +125,3 @@ intents.message_content = True
 
 client = Client(intents=intents)
 client.run(API_KEY)
-
-# await self.wait_until_ready()
-# try:
-#     df = pd.read_csv("./csvs/rss.csv")
-# except FileNotFoundError:
-#     print("./csv/rss.csv can't be found")
-#     return
-# except Exception as e:
-#     print("Error reading Calendar.csv: " + e)
-#     return
-# urls = df['URL']
-# mentions = df['MENTION']
-# channels = df['CHANNEL']
-# files = df['FILE']

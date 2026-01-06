@@ -18,10 +18,10 @@ def library_check(url):
     cal = Calendar(response.text)
     if cal:
         events = cal.events
-        events_list = events_to_list(events)
+        events_list = ics_events_to_list(events)
         compiled_events = compile_events(events)
 
-def events_to_list(events):
+def ics_events_to_list(events):
     #First time I formally did this
     return [f"{event.name}, {event.begin}, {event.url}" for event in events]
 
