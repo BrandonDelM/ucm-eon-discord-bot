@@ -23,13 +23,6 @@ class Client(discord.Client):
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
         self.loop.create_task(self.uc_merced_calendars_check())
-
-    async def on_message(self, message):
-        if message.author == self.user:
-            return
-        
-        if message.content.startswith('hello'):
-            await message.channel.send(f'Hi there {message.author}')
     
     async def automate_check(self, url, channel, file, type, delay_offset=0):
         channel = self.get_channel(channel)
