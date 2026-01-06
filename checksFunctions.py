@@ -33,6 +33,7 @@ def is_change(file_name, events):
     return new
 
 def log_changes(name, events):
+    os.makedirs(os.path.dirname(name), exist_ok=True)
     with open(name, "w") as file:
         for event in events:
             file.write(f"{event}\n")

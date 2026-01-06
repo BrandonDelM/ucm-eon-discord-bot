@@ -1,5 +1,3 @@
-import requests
-
 def get_calendar(soup):
     return soup.find(class_="fullcalendar-content")
 

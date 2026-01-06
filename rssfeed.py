@@ -37,5 +37,5 @@ def get_items(soup):
         return soup.find_all('item')
     return None
 
-r = requests("https://pace.ucmerced.edu/rss.xml")
+r = request("https://pace.ucmerced.edu/rss.xml")
 rss_check_for_changes(r, "logs/rss/pace_log.txt")
