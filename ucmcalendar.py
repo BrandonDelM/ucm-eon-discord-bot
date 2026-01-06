@@ -7,14 +7,6 @@ def get_all_events(soup):
 def get_all_dates(soup):
     return soup.find_all('a')
 
-def format_text(mismatches):
-    text = ""
-    for mismatch in mismatches:
-        if len(text + mismatch + "\n") > 2000:
-            break
-        text += mismatch + "\n"
-    return text
-
 def events_to_list(dates, events):
     compare_list = []
     for i in range(len(events)):

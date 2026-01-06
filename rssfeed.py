@@ -3,15 +3,6 @@ import requests
 import os
 from checksFunctions import *
 
-def rss_check_for_changes(r, file):
-    soup = BeautifulSoup(r.text, 'xml')
-    items = get_items(soup)
-    events = get_list(items)
-    new_events =  is_change(file, events)
-    for new_event in new_events:
-        print(new_event)
-    log_changes(file, events)
-
 def get_list(items):
     events = []
     for item in items:
@@ -36,6 +27,3 @@ def get_items(soup):
     if soup.find_all('item'):
         return soup.find_all('item')
     return None
-
-r = request("https://pace.ucmerced.edu/rss.xml")
-rss_check_for_changes(r, "logs/rss/pace_log.txt")

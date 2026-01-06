@@ -31,9 +31,5 @@ def compile_events(events):
         all_events += f"{event.name}, {event.begin}, {event.url}\n"
     return all_events
 
-# def log_changes(name, content):
-#     with open(name, "w") as file:
-#         file.write(content)
-
 events_calendar_check("https://events.ucmerced.edu/live/ical/events/header/All%20Events")
 # library_check("https://libcal.ucmerced.edu/ical_subscribe.php?src=p&cid=7551")
