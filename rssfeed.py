@@ -1,3 +1,15 @@
+from bs4 import BeautifulSoup
+from checksFunctions import is_change, log_changes
+
+#Returns the new events from a rss
+def rss_changes(r, file):
+    soup = BeautifulSoup(r.text, 'xml')
+    items = get_items(soup)
+    events = create_rss_events_list(items)
+    new_events = is_change(file, events)
+    log_changes(file, events)
+    return new_events
+
 def create_rss_events_list(items):
     events = []
     for item in items:

@@ -9,37 +9,7 @@ from ucmcalendar import *
 from icscheck import *
 from rssfeed import *
 from checksFunctions import *
-
-def ics_change(r, file):
-    cal = Calendar(r.text)
-    events = get_ics_events(cal)
-    if events is not None:
-        events_list = create_ics_event_list(events)
-        new_events = is_change(file, events_list)
-        log_changes(file, events_list)
-        return new_events
-    return None
-
-def rss_changes(r, file):
-    soup = BeautifulSoup(r.text, 'xml')
-    items = get_items(soup)
-    events = create_rss_events_list(items)
-    new_events = is_change(file, events)
-    log_changes(file, events)
-    return new_events
-
-def calendar_changes(r, file, url):
-    url = url[:url.rfind("/")]
-    soup  = BeautifulSoup(r.text, 'html.parser')
-    calendar = get_calendar(soup)
-    events, dates, links = get_calendar_event_info(calendar, url)
-
-    events_list = create_calendar_event_list(dates, events, links)
-
-    new = is_change(file, events_list)
-    log_changes(file, events_list)
-
-    return new
+from CSVFunctions import *
 
 def check_for_changes(r, file, url, type):
     if type == "calendar":
@@ -48,31 +18,6 @@ def check_for_changes(r, file, url, type):
         return rss_changes(r, file)
     elif type == "ics":
         return ics_change(r, file)
-
-def is_csv_accessible(file):
-    try:
-        df = pd.read_csv(file)
-    except FileNotFoundError:
-        print(f"{file} can't be found")
-        return None
-    except Exception as e:
-        print(f"Error reading {file}: {e}")
-        return None
-    return df
-
-def get_csv_column(df, name):
-    try:
-        return df[name]
-    except:
-        return None
-
-def get_csv_columns(df):
-    urls = get_csv_column(df, 'URL')
-    channels = get_csv_column(df, 'CHANNEL')
-    mentions = get_csv_column(df, 'MENTION')
-    files = get_csv_column(df, 'FILE')
-
-    return urls, channels, mentions, files
 
 class Client(discord.Client):
     async def on_ready(self):
