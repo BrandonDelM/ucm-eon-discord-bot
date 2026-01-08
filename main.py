@@ -7,6 +7,7 @@ from icscheck import *
 from rssfeed import *
 from checksFunctions import *
 from CSVFunctions import *
+from bluesky import *
 
 def check_for_changes(r, file, url, type):
     if type == "calendar":
@@ -17,6 +18,8 @@ def check_for_changes(r, file, url, type):
         return ics_change(r, file)
     elif type == "youtube":
         return rss_changes(r, file)
+    elif type == "bluesky":
+        return bluesky_change(r, file)
 
 class Client(discord.Client):
     async def on_ready(self):
@@ -76,36 +79,6 @@ class Client(discord.Client):
 
         tasks.extend(await self.get_tasks("./csvs/rss.csv", "rss", offset))
         offset = len(tasks)
-        # file = "./csvs/calendars.csv"
-        # type = "calendar"
-        # df = is_csv_accessible(file)
-        # if df is not None:
-        #     urls, channels, mentions, files = get_csv_columns(df)
-        #     for i in range(len(urls)):
-        #         task = self.loop.create_task(self.automate_check(urls[i], channels[i], files[i], type, delay_offset=i*20))
-        #         n += 1
-        #         tasks.append(task)
-
-        # file = "./csvs/ics.csv"
-        # type = "ics"
-        # df = is_csv_accessible(file)
-        # if df is not None:
-        #     urls, channels, mentions, files = get_csv_columns(df)
-        #     for i in range(len(urls)):
-        #         task = self.loop.create_task(self.automate_check(urls[i], channels[i], files[i], type, delay_offset=n*20))
-        #         n += 1
-        #         tasks.append(task)
-
-        # file = "./csvs/rss.csv"
-        # type = "rss"
-        # df = is_csv_accessible(file)
-        # if df is not None:
-        #     df = is_csv_accessible(file)
-        #     urls, channels, mentions, files = get_csv_columns(df)
-        #     for i in range(len(urls)):
-        #         task = self.loop.create_task(self.automate_check(urls[i], channels[i], files[i], type, delay_offset=n*20))
-        #         n += 1
-        #         tasks.append(task)
 
         await asyncio.gather(*tasks)
 

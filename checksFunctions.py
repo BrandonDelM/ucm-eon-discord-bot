@@ -1,7 +1,7 @@
 import os
 import requests
 
-def get_element(soup, element_name):
+def get_elements(soup, element_name):
     if soup.find_all(element_name):
         return soup.find_all(element_name)
     return None

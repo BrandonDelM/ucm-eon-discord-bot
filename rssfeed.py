@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from checksFunctions import is_change, log_changes
 
-#Returns the new events from a rss
+#Returns the new events from an rss
 def rss_changes(r, file):
     soup = BeautifulSoup(r.text, 'xml')
     items = get_items(soup)
