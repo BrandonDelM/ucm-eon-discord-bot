@@ -1,32 +1,24 @@
 from bs4 import BeautifulSoup
 from checksFunctions import is_change, log_changes, get_elements
+from blueskyAuth import init_bluesky_client, get_bluesky_feed
 
 #Returns new bluesky post from an rss
-def bluesky_change(r, file):
-    soup = BeautifulSoup(r.text)
-    items = get_elements(soup, "item")
-    posts = create_bluesky_post_list(items)
+def bluesky_change(file):
+    client = init_bluesky_client()
+    data = get_bluesky_feed(client)
+    feed = data.feed
+    posts = get_bluesky_post_info(feed)
     new_posts = is_change(file, posts)
     log_changes(file, posts)
     return new_posts
 
-def create_bluesky_post_list(items):
+def get_bluesky_post_info(feed):
     posts = []
-    for item in items:
-        try:
-            date = item.pubDate.text
-        except:
-            date = None
-
-        try:
-            link = item.link.text
-        except:
-            link = None
-        
-        try:
-            description = item.description.text[:100]
-        except:
-            description = None
-        
-        posts.append(f"{description}, {date}, {link}")
+    for post in feed:
+        author = post.post.author.handle
+        text = f"{post.post.record.text[:100].replace('\n','')}..."
+        date = post.post.record.created_at
+        posts.append(f"{text}, {date}, {author}")
     return posts
+
+# bluesky_change("./bluesky_log.txt")
