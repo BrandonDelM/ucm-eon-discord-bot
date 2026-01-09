@@ -8,6 +8,8 @@ from rssfeed import *
 from checksFunctions import *
 from CSVFunctions import *
 from bluesky import *
+from googleSheets import init_sheets_client
+from sheetsFunctions import *
 
 def log_updates(file, url, type, new_events):
     if len(new_events) == 0:
