@@ -12,12 +12,15 @@ def get_worksheet_columns(worksheet):
     rows = data[1:]
 
     urls = [row[0] for row in rows]
-    mentions = [row[1] for row in rows]
-    channels = [row[2] for row in rows]
+    channels = [int(row[1]) for row in rows]
+    mentions = [row[2] for row in rows]
     files = [row[3] for row in rows]
 
-    return urls, mentions, channels, files
+    return urls, channels, mentions, files
 
-def update_worksheet_logs(worksheet, update):
-    new_row = [update]
-    worksheet.append_row(new_row)
+def update_worksheet_logs(worksheet, updates, type, url):
+    if len(updates) == 0:
+        worksheet.append_row([f"No updates to {type}: {url}"])
+    else:
+        for update in updates:
+            worksheet.append_row([update])
