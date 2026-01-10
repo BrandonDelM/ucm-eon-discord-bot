@@ -1,5 +1,4 @@
-import gspread
-import pandas as pd
+import time
 from datetime import date
 
 def get_sheet(client, id):
@@ -24,3 +23,4 @@ def update_worksheet_logs(worksheet, updates, type, url):
         for update in updates:
             update = f"{date.today()}: {update}"
             worksheet.append_row([update])
+            time.sleep(1.5)
