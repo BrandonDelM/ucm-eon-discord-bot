@@ -31,7 +31,7 @@ class Client(discord.Client):
 
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
-        self.loop.create_task(self.uc_merced_calendars_check())
+        self.loop.create_task(self.uc_merced_check())
         self.loop.create_task(self.updating_message())
 
     async def updating_message(self):
@@ -80,13 +80,13 @@ class Client(discord.Client):
         return tasks
 
 
-    async def uc_merced_calendars_check(self):
+    async def uc_merced_check(self):
         await self.wait_until_ready()
         tasks = []
         offset = 0
 
-        # tasks.extend(await self.bluesky_check(1456797841803444367, "logs/bluesky/bluesky_log.txt", offset))
-        # offset = len(tasks)
+        tasks.append(self.loop.create_task(self.automate_check("https://bsky.app/profile/starringon.bsky.social/feed/aaajx5bhjuexc", 1459382789060431924, "logs/bluesky/bluesky_log.txt", "bluesky", offset)))
+        offset = len(tasks)
 
         tasks.extend(await self.get_tasks("CALENDAR", "calendar", offset))
         offset = len(tasks)
