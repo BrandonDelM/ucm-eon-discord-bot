@@ -18,7 +18,22 @@ def get_bluesky_post_info(feed):
         author = post.post.author.handle
         text = f"{post.post.record.text[:100].replace('\n','')}..."
         date = post.post.record.created_at
-        posts.append(f"{text}, {date}, {author}")
+        url  = construct_bluesky_url(post)
+        posts.append(f"{author}, {text}, {date}, {url}")
     return posts
 
 # bluesky_change("./bluesky_log.txt")
+
+def construct_bluesky_url(post):
+    try:
+        did = post.post.author.did
+    except:
+        return None
+    
+    try:
+        uri = post.post.uri
+        rkey = uri[uri.rfind("/")+1:]
+    except:
+        return None
+    url = f"https://bsky.app/profile/{did}/post/{rkey}"
+    return url
