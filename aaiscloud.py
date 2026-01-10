@@ -2,18 +2,6 @@ from aaiscloudlink import build_aaiscloud_calendar_url, get_aaiscloud_headers
 from checksFunctions import is_change, log_changes
 import requests
 
-#ActivityId
-# ActivityName
-# StartDate
-# ActivityTypeCode
-# CampusName
-# BuildingCode
-# RoomNumber
-# LocationName
-# StartDateTime
-# EndDateTime
-# InstructorName
-
 def aaiscloud_changes(file):
     data = get_aaiscloud_events()
     events_data = data['data']

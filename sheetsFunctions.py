@@ -20,7 +20,7 @@ def get_worksheet_columns(worksheet):
 
 def update_worksheet_logs(worksheet, updates, type, url):
     if len(updates) != 0:
+        update_log = f"{date.today()}: New updates for {url}\n"
         for update in updates:
-            update = f"{date.today()}: {update}"
-            worksheet.append_row([update])
-            time.sleep(1.5)
+            update_log += f"{update}\n"
+        worksheet.append_row([update_log])

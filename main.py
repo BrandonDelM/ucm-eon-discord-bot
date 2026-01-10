@@ -55,7 +55,7 @@ class Client(discord.Client):
         await asyncio.sleep(delay_offset)
 
         while not self.is_closed():
-            r = await asyncio.to_thread(request, url)
+            r = request(url)
             if r is None:
                 await channel.send(f"Failure to find {url}")
                 return
@@ -74,8 +74,8 @@ class Client(discord.Client):
 
     async def get_tasks(self, title, type, offset):
         tasks = []
-        worksheet = await asyncio.to_thread(get_worksheet, self.feed_sheet, title)
-        urls, channels, mentions, files = await asyncio.to_thread(get_worksheet_columns, worksheet)
+        worksheet = get_worksheet(self.feed_sheet, title)
+        urls, channels, mentions, files = get_worksheet_columns(worksheet)
         for i in range(len(urls)):
             task = self.loop.create_task(self.automate_check(urls[i], channels[i], files[i], type, delay_offset=offset*20))
             offset += 1
@@ -91,7 +91,7 @@ class Client(discord.Client):
         tasks.append(self.loop.create_task(self.automate_check("https://bsky.app/profile/starringon.bsky.social/feed/aaajx5bhjuexc", 1459382789060431924, "logs/bluesky/bluesky_log.txt", "bluesky", offset)))
         offset = len(tasks)
 
-        tasks.append(self.loop.create_task(self.automate_check("https://www.aaiscloud.com/UCAMerced/default.aspx", 1456771381629812787, "logs/aaiscloud/aaiscloud_log.txt", "aaiscloud", offset)))
+        tasks.append(self.loop.create_task(self.automate_check("https://www.aaiscloud.com/UCAMerced/default.aspx", 1459661967336804464, "logs/aaiscloud/aaiscloud_log.txt", "aaiscloud", offset)))
         offset = len(tasks)
 
         tasks.extend(await self.get_tasks("CALENDAR", "calendar", offset))
