@@ -1,5 +1,6 @@
 import gspread
 import pandas as pd
+from datetime import date
 
 def get_sheet(client, id):
     return client.open_by_key(id)
@@ -19,8 +20,7 @@ def get_worksheet_columns(worksheet):
     return urls, channels, mentions, files
 
 def update_worksheet_logs(worksheet, updates, type, url):
-    if len(updates) == 0:
-        worksheet.append_row([f"No updates to {type}: {url}"])
-    else:
+    if len(updates) != 0:
         for update in updates:
+            update = f"{date.today()}: {update}"
             worksheet.append_row([update])

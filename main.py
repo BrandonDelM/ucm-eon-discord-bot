@@ -32,6 +32,16 @@ class Client(discord.Client):
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
         self.loop.create_task(self.uc_merced_calendars_check())
+        self.loop.create_task(self.updating_message())
+
+    async def updating_message(self):
+        channel = self.get_channel(1331494875350171679)
+        if channel is None:
+            print(f"Error: No channel {channel} exists")
+            return
+        while not self.is_closed():
+            await channel.send("New rounds of update checks is occurring.")
+            await asyncio.sleep(3600)
 
     async def automate_check(self, url, channel, file, type, delay_offset=0):
         channel = self.get_channel(channel)
@@ -50,17 +60,13 @@ class Client(discord.Client):
             new_events = check_for_changes(r, file, url, type)
             update_worksheet_logs(self.update_worksheet, new_events, type, url)
 
-            new_events_text = ""
-            if len(new_events) == 0:
-                new_events_text = f"No changes found for {type}: {url}"
-            else:
-                new_events_text += f"Changes for {type}: {url}\n"
+            if len(new_events) != 0:
+                new_events_text = f"Changes for {type}: {url}\n"
                 for new_event in new_events:
                     if len(f"{new_events_text}{new_event}\n") > 2000:
                         break
                     new_events_text += f"{new_event}\n"
-
-            await channel.send(new_events_text)
+                await channel.send(new_events_text)
             await asyncio.sleep(3600)
 
     async def get_tasks(self, title, type, offset):
