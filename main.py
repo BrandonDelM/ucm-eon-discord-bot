@@ -59,6 +59,7 @@ class Client(discord.Client):
         await asyncio.sleep(delay_offset)
 
         while not self.is_closed():
+            print(f"Checking {type}: {url}")
             r = request(url)
             if r is None:
                 await channel.send(f"Failure to find {url}")
@@ -97,7 +98,7 @@ class Client(discord.Client):
         tasks.append(self.loop.create_task(self.automate_check("https://www.aaiscloud.com/UCAMerced/default.aspx", 1459661967336804464, "logs/aaiscloud/aaiscloud_log.txt", "aaiscloud", offset)))
         offset = len(tasks)
 
-        tasks.append(self.loop.create_task(self.automate_check("https://hire.ucmerced.edu/upcoming-events", 1459303883200397405, "logs/handshake/handshake_log.txt", "handshake", offset)))
+        tasks.append(await self.get_tasks("HANDSHAKE", "handshake", offset))
         offset = len(tasks)
 
         tasks.extend(await self.get_tasks("CALENDAR", "calendar", offset))
