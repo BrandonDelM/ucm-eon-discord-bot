@@ -10,6 +10,7 @@ from bluesky import *
 from googleSheets import init_sheets_client
 from sheetsFunctions import *
 from aaiscloud import aaiscloud_changes
+from youtube import youtube_change
 
 def check_for_changes(r, file, url, type):
     if type == "calendar":
@@ -19,7 +20,7 @@ def check_for_changes(r, file, url, type):
     elif type == "ics":
         return ics_change(r, file)
     elif type == "youtube":
-        return rss_changes(r, file)
+        return youtube_change(r, file)
     elif type == "bluesky":
         return bluesky_change(file)
     elif type == "aaiscloud":
@@ -82,7 +83,6 @@ class Client(discord.Client):
             tasks.append(task)
         return tasks
 
-
     async def uc_merced_check(self):
         await self.wait_until_ready()
         tasks = []
@@ -101,6 +101,9 @@ class Client(discord.Client):
         offset = len(tasks)
 
         tasks.extend(await self.get_tasks("RSS", "rss", offset))
+        offset = len(tasks)
+
+        tasks.extend(await self.get_tasks("YOUTUBE", "youtube", offset))
         offset = len(tasks)
 
         await asyncio.gather(*tasks)
