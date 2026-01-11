@@ -11,6 +11,7 @@ from googleSheets import init_sheets_client
 from sheetsFunctions import *
 from aaiscloud import aaiscloud_changes
 from youtube import youtube_change
+from handshake import handshake_change
 
 def check_for_changes(r, file, url, type):
     if type == "calendar":
@@ -25,6 +26,8 @@ def check_for_changes(r, file, url, type):
         return bluesky_change(file)
     elif type == "aaiscloud":
         return aaiscloud_changes(file)
+    elif type == "handshake":
+        return handshake_change(r, file) 
 
 class Client(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -92,6 +95,9 @@ class Client(discord.Client):
         offset = len(tasks)
 
         tasks.append(self.loop.create_task(self.automate_check("https://www.aaiscloud.com/UCAMerced/default.aspx", 1459661967336804464, "logs/aaiscloud/aaiscloud_log.txt", "aaiscloud", offset)))
+        offset = len(tasks)
+
+        tasks.append(self.loop.create_task(self.automate_check("https://hire.ucmerced.edu/upcoming-events", 1459303883200397405, "logs/handshake/handshake_log.txt", "handshake", offset)))
         offset = len(tasks)
 
         tasks.extend(await self.get_tasks("CALENDAR", "calendar", offset))
