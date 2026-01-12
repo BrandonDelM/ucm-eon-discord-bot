@@ -40,6 +40,22 @@ class Client(discord.Client):
         print(f'Logged on as {self.user}!')
         self.loop.create_task(self.uc_merced_check())
         self.loop.create_task(self.updating_message())
+        # self.loop.create_task(self.follow_announcements())
+
+    async def follow_announcements(self):
+        await self.wait_until_ready()
+
+        clubChannel = self.get_channel(1459382875110510632)
+
+        await clubChannel.follow(destination=client.get_channel(687561274288373785), reason=None)
+        await clubChannel.follow(destination=client.get_channel(1329585146088656937), reason=None)
+        await clubChannel.follow(destination=client.get_channel(1065027452524580945), reason=None)
+        await clubChannel.follow(destination=client.get_channel(1293779923550605395), reason=None)
+        await clubChannel.follow(destination=client.get_channel(1278588924834480179), reason=None)
+        await clubChannel.follow(destination=client.get_channel(1027661922767749170), reason=None)
+        await clubChannel.follow(destination=client.get_channel(1197337900497502258), reason=None)
+        await clubChannel.follow(destination=client.get_channel(1227451469243093072), reason=None)
+        await clubChannel.follow(destination=client.get_channel(895799091240501271), reason=None)
 
     async def updating_message(self):
         channel = self.get_channel(1331494875350171679)

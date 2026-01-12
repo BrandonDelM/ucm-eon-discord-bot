@@ -22,7 +22,7 @@ def get_aaiscloud_event_info(events_data):
     return events
 
 def get_aaiscloud_events():
-    url = build_aaiscloud_calendar_url()
+    url = build_aaiscloud_calendar_url(days=1)
     headers = get_aaiscloud_headers()
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
