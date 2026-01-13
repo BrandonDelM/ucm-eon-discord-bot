@@ -31,6 +31,14 @@ def get_url(header):
     url = "https://hire.ucmerced.edu"
     return f"{url}{header.find("a").get("href")}"
 
+# def handshake_change_test(r):
+#     soup = BeautifulSoup(r.text, "html.parser")
+#     contents = get_contents(soup)
+#     headers = get_headers(contents)
+#     events = get_handshake_event_info(headers)
+#     for event in events:
+#         print(event)
+
 # import requests
-# r = requests.get("https://hire.ucmerced.edu/upcoming-events")
-# handshake_change(r, "")
+# r = requests.get("https://centerforhumanities.ucmerced.edu/events")
+# handshake_change_test(r)
