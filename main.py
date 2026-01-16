@@ -17,7 +17,7 @@ from sports import sports_change
 def messages_text(events):
     messages = []
     for event in events:
-        items = [item for item in event if item != ""]
+        items = [item for item in event if item and str(item).strip()]
         message = ", ".join(items)
         messages.append(message)
     return messages
@@ -120,17 +120,17 @@ class Client(discord.Client):
         tasks = []
         offset = 0
 
-        tasks.append(self.loop.create_task(self.automate_check("https://bsky.app/profile/starringon.bsky.social/feed/aaajx5bhjuexc", 1461758494095970371, "bluesky", "bluesky", offset)))
+        tasks.append(self.loop.create_task(self.automate_check("https://bsky.app/profile/starringon.bsky.social/feed/aaajx5bhjuexc", 1459382789060431924, "bluesky", "bluesky", offset)))
         offset = len(tasks)
 
-        tasks.append(self.loop.create_task(self.automate_check("https://www.aaiscloud.com/UCAMerced/default.aspx", 1461758494095970371, "aaiscloud", "aaiscloud", offset)))
+        tasks.append(self.loop.create_task(self.automate_check("https://www.aaiscloud.com/UCAMerced/default.aspx", 1459661967336804464, "aaiscloud", "aaiscloud", offset)))
         offset = len(tasks)
 
         #UC Merced Bobcats Sports News
-        tasks.append(self.loop.create_task(self.automate_check("https://ucmercedbobcats.com/index.aspx", 1461758494095970371, "sports", "sports", offset)))
+        tasks.append(self.loop.create_task(self.automate_check("https://www.ucmerced.edu/athletics-and-recreation", 1461569361973215334, "sports", "sports", offset)))
         offset = len(tasks)
 
-        tasks.append(await self.get_tasks("HANDSHAKE", "handshake", offset))
+        tasks.extend(await self.get_tasks("HANDSHAKE", "handshake", offset))
         offset = len(tasks)
 
         tasks.extend(await self.get_tasks("CALENDAR", "calendar", offset))

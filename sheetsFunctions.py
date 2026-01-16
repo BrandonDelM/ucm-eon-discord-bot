@@ -23,4 +23,5 @@ def update_worksheet_logs(worksheet, updates, url):
         update_log = f"{date.today()}: New updates for {url}\n"
         for update in updates:
             update_log += f"{update}\n"
+        update_log = update_log[:49000]
         worksheet.append_row([update_log])

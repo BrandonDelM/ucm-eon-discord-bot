@@ -18,4 +18,4 @@ def get_ics_events(cal):
     return None
 
 def create_ics_event_list(events):
-    return [database_format("", event.name, event.begin, "", "", event.url) for event in events]
+    return [database_format("", event.name, str(event.begin), "", "", event.url) for event in events]

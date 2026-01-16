@@ -11,6 +11,9 @@ def youtube_change(r, file):
 
 def create_youtube_video_list(entries):
     videos = []
+    if not entries:
+        return []
+    
     for entry in entries:
         try:
             youtube_id = entry.find("yt:videoId")

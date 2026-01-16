@@ -19,7 +19,7 @@ def create_table(table_name):
     c = conn.cursor()
 
     c.execute(f"""
-        CREATE TABLE {table_name} (
+        CREATE TABLE "{table_name}" (
             poster text,
             title text,
             start_time text,
