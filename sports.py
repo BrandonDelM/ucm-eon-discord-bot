@@ -1,8 +1,6 @@
 from bs4 import BeautifulSoup
 from checksFunctions import is_change, log_changes, database_format
 
-
-
 def sports_change(table):
     data = get_sports_data()
     news_data = data['data']
@@ -49,8 +47,19 @@ def get_sports_data():
 #     data = get_sports_data()
 #     news_data = data['data']
 #     news = get_sports_news(news_data)
+#     delete_from_table("sports",len(news))
 #     new_news = is_change("sports",news)
 #     log_changes("sports",news)
 #     return new_news
 
-# sport_test()
+# def messages_text(events):
+#     messages = []
+#     for event in events:
+#         items = [item for item in event if item != ""]
+#         message = ", ".join(items)
+#         messages.append(message)
+#     return messages
+
+# messages = messages_text(sport_test())
+# for message in messages:
+#     print(message)

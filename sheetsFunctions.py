@@ -18,7 +18,7 @@ def get_worksheet_columns(worksheet):
 
     return urls, channels, mentions, tables
 
-def update_worksheet_logs(worksheet, updates, type, url):
+def update_worksheet_logs(worksheet, updates, url):
     if len(updates) != 0:
         update_log = f"{date.today()}: New updates for {url}\n"
         for update in updates:

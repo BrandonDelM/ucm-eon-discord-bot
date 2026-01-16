@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from  checksFunctions import is_change, log_changes, database_format
+from checksFunctions import is_change, log_changes, database_format
 
 #Returns the new events from a calendar
 def calendar_changes(r, table, url):
@@ -34,5 +34,5 @@ def get_calendar_event_info(soup, url):
 def create_calendar_event_list(dates, events, links):
     event_list = []
     for i in range(len(events)):
-        event_list.append(database_format("",events[i],dates[i],"","",links[i]))
+        event_list.append(database_format("",events[i].get_text(),dates[i].get_text(),"","",links[i]))
     return event_list
