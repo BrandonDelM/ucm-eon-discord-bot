@@ -57,11 +57,21 @@ def clear_table(table_name):
     conn.commit()
     conn.close()
 
-def get_all_rows_from_table(table_name,row):
+def delete_from_table(table_name,id):
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
 
-    c.execute(f"SELECT rowid, * FROM {table_name}")
+    id = str(id)
+
+    c.execute(f"DELETE FROM {table_name} WHERE rowid = (?)", (id,))
+    conn.commit()
+    conn.close()
+
+def get_all_rows_from_table(table_name):
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+
+    c.execute(f"SELECT * FROM {table_name}")
     items = c.fetchall()
 
     conn.commit()

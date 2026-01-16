@@ -1,5 +1,6 @@
 import os
 import requests
+from database import *
 
 def get_elements(soup, element_name):
     if soup.find_all(element_name):
@@ -12,28 +13,41 @@ def request(url):
         return r
     return None
 
-def is_same(event_list, compare):
-    for event in event_list:
-        if event.strip() == compare.strip():
+def is_same(events, comparison):
+    for event in events:
+        if event == comparison:
             return True
     return False
 
-def is_change(file_name, events):
+def is_change(events,table):
     new = []
 
-    if not os.path.exists(file_name):
-        return [f"__New event__: {event}" for event in events]
-
-    with open(file_name, 'r') as file:
-        file_lines = [line.strip() for line in file.readlines()]
+    if not table_exists(table):
+        create_table(table)
+        add_many_to_table(events,table)
+        return events
     
+    table_items = get_all_rows_from_table(table)
+
     for event in events:
-        if is_same(file_lines, event) == False:
-            new.append(f"__New event__: {event}")
+        if not is_same(table_items, event):
+            new.append(event)
     return new
 
-def log_changes(name, events):
-    os.makedirs(os.path.dirname(name), exist_ok=True)
-    with open(name, "w") as file:
-        for event in events:
-            file.write(f"{event}\n")
+def log_changes(table, events):
+    if not table_exists(table):
+        create_table(table)
+    
+    clear_table(table)
+    add_many_to_table(events,table)
+
+def database_format(poster="", title="", start="", end="", building="", link=""):
+    """""Format so I don't forget:
+    poster, 
+    title, 
+    start, 
+    end, 
+    building, 
+    link
+    """
+    return (poster,title,start,end,building,link)

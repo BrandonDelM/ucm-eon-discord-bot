@@ -111,30 +111,30 @@ class Client(discord.Client):
         tasks = []
         offset = 0
 
-        tasks.append(self.loop.create_task(self.automate_check("https://bsky.app/profile/starringon.bsky.social/feed/aaajx5bhjuexc", 1459382789060431924, "logs/bluesky/bluesky_log.txt", "bluesky", offset)))
+        tasks.append(self.loop.create_task(self.automate_check("https://bsky.app/profile/starringon.bsky.social/feed/aaajx5bhjuexc", 1461758494095970371, "logs/bluesky/bluesky_log.txt", "bluesky", offset)))
         offset = len(tasks)
 
-        tasks.append(self.loop.create_task(self.automate_check("https://www.aaiscloud.com/UCAMerced/default.aspx", 1459661967336804464, "logs/aaiscloud/aaiscloud_log.txt", "aaiscloud", offset)))
+        tasks.append(self.loop.create_task(self.automate_check("https://www.aaiscloud.com/UCAMerced/default.aspx", 1461758494095970371, "logs/aaiscloud/aaiscloud_log.txt", "aaiscloud", offset)))
         offset = len(tasks)
 
         #UC Merced Bobcats Sports News
         tasks.append(self.loop.create_task(self.automate_check("https://ucmercedbobcats.com/", 1461569361973215334, "logs/sports/sports_log.txt", "sports", offset)))
         offset = len(tasks)
 
-        tasks.append(await self.get_tasks("HANDSHAKE", "handshake", offset))
-        offset = len(tasks)
+        # tasks.append(await self.get_tasks("HANDSHAKE", "handshake", offset))
+        # offset = len(tasks)
 
-        tasks.extend(await self.get_tasks("CALENDAR", "calendar", offset))
-        offset = len(tasks)
+        # tasks.extend(await self.get_tasks("CALENDAR", "calendar", offset))
+        # offset = len(tasks)
 
-        tasks.extend(await self.get_tasks("ICS", "ics", offset))
-        offset = len(tasks)
+        # tasks.extend(await self.get_tasks("ICS", "ics", offset))
+        # offset = len(tasks)
 
-        tasks.extend(await self.get_tasks("RSS", "rss", offset))
-        offset = len(tasks)
+        # tasks.extend(await self.get_tasks("RSS", "rss", offset))
+        # offset = len(tasks)
 
-        tasks.extend(await self.get_tasks("YOUTUBE", "youtube", offset))
-        offset = len(tasks)
+        # tasks.extend(await self.get_tasks("YOUTUBE", "youtube", offset))
+        # offset = len(tasks)
 
         await asyncio.gather(*tasks)
 
