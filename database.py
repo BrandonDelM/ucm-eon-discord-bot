@@ -35,7 +35,7 @@ def add_many_to_table(list, table_name):
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
 
-    c.executemany(f"INSERT INTO {table_name} VALUES (?,?,?,?,?,?)", (list))
+    c.executemany(f'INSERT INTO "{table_name}" VALUES (?,?,?,?,?,?)', (list))
 
     conn.commit()
     conn.close()
@@ -44,7 +44,7 @@ def add_to_table(table_name, poster="",title="",start_time="",end_time="",buildi
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
 
-    c.execute(f"INSERT INTO {table_name} VALUES (?,?,?,?,?,?)", (poster,title,start_time,end_time,building,link))
+    c.execute(f'INSERT INTO "{table_name}" VALUES (?,?,?,?,?,?)', (poster,title,start_time,end_time,building,link))
 
     conn.commit()
     conn.close()
@@ -63,7 +63,7 @@ def delete_from_table(table_name,id):
 
     id = str(id)
 
-    c.execute(f"DELETE FROM {table_name} WHERE rowid = (?)", (id,))
+    c.execute(f'DELETE FROM "{table_name}" WHERE rowid = (?)', (id,))
     conn.commit()
     conn.close()
 
@@ -71,7 +71,7 @@ def get_all_rows_from_table(table_name):
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
 
-    c.execute(f"SELECT * FROM {table_name}")
+    c.execute(f'SELECT * FROM "{table_name}"')
     items = c.fetchall()
 
     conn.commit()
