@@ -12,6 +12,7 @@ from sheetsFunctions import *
 from aaiscloud import aaiscloud_changes
 from youtube import youtube_change
 from handshake import handshake_change
+from sports import sports_change
 
 def check_for_changes(r, file, url, type):
     if type == "calendar":
@@ -27,7 +28,9 @@ def check_for_changes(r, file, url, type):
     elif type == "aaiscloud":
         return aaiscloud_changes(file)
     elif type == "handshake":
-        return handshake_change(r, file) 
+        return handshake_change(r, file)
+    elif type == "sports":
+        return sports_change(file)
 
 class Client(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -112,6 +115,10 @@ class Client(discord.Client):
         offset = len(tasks)
 
         tasks.append(self.loop.create_task(self.automate_check("https://www.aaiscloud.com/UCAMerced/default.aspx", 1459661967336804464, "logs/aaiscloud/aaiscloud_log.txt", "aaiscloud", offset)))
+        offset = len(tasks)
+
+        #UC Merced Bobcats Sports News
+        tasks.append(self.loop.create_task(self.automate_check("https://ucmercedbobcats.com/", 1461569361973215334, "logs/sports/sports_log.txt", "sports", offset)))
         offset = len(tasks)
 
         tasks.append(await self.get_tasks("HANDSHAKE", "handshake", offset))
