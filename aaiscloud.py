@@ -1,13 +1,13 @@
 from aaiscloudlink import build_aaiscloud_calendar_url, get_aaiscloud_headers
-from checksFunctions import is_change, log_changes
+from checksFunctions import is_change, log_changes, database_format
 import requests
 
-def aaiscloud_changes(file):
+def aaiscloud_changes(table):
     data = get_aaiscloud_events()
     events_data = data['data']
     events = get_aaiscloud_event_info(events_data)
-    new_events = is_change(file, events)
-    log_changes(file, events)
+    new_events = is_change(table, events)
+    log_changes(table, events)
     return new_events
 
 def get_aaiscloud_event_info(events_data):
@@ -18,7 +18,7 @@ def get_aaiscloud_event_info(events_data):
         start = get_start_date(event)
         end = get_end_date(event)
         building = get_building(event)
-        events.append(f"{instructor}, {name}, {building}, {start}, {end}")
+        events.append(database_format(instructor,name,start,end,building,""))
     return events
 
 def get_aaiscloud_events():

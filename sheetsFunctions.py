@@ -14,13 +14,14 @@ def get_worksheet_columns(worksheet):
     urls = [row[0] for row in rows]
     channels = [int(row[1]) for row in rows]
     mentions = [row[2] for row in rows]
-    files = [row[3] for row in rows]
+    tables = [row[3] for row in rows]
 
-    return urls, channels, mentions, files
+    return urls, channels, mentions, tables
 
-def update_worksheet_logs(worksheet, updates, type, url):
+def update_worksheet_logs(worksheet, updates, url):
     if len(updates) != 0:
         update_log = f"{date.today()}: New updates for {url}\n"
         for update in updates:
             update_log += f"{update}\n"
+        update_log = update_log[:49000]
         worksheet.append_row([update_log])

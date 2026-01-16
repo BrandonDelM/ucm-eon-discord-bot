@@ -1,12 +1,12 @@
 from bs4 import BeautifulSoup
-from checksFunctions import is_change, log_changes
+from checksFunctions import is_change, log_changes, database_format
 
-def sports_change(file):
+def sports_change(table):
     data = get_sports_data()
     news_data = data['data']
     news = get_sports_news(news_data)
-    new_news = is_change(file, news)
-    log_changes(file, news)
+    new_news = is_change(table, news)
+    log_changes(table, news)
     return new_news
 
 import requests
@@ -28,7 +28,7 @@ def get_sports_news(news_data):
             link = f"https://ucmercedbobcats.com{headline['story_path']}"
         except:
             link = None
-        news.append(f"{title}, {date}, {link}")
+        news.append(database_format("",title,date,"","",link))
     return news
 
 def get_sports_data():
@@ -40,3 +40,26 @@ def get_sports_data():
     if response.status_code ==  200:
         return response.json()
     return None
+
+
+# from database import *
+# def sport_test():
+#     data = get_sports_data()
+#     news_data = data['data']
+#     news = get_sports_news(news_data)
+#     delete_from_table("sports",len(news))
+#     new_news = is_change("sports",news)
+#     log_changes("sports",news)
+#     return new_news
+
+# def messages_text(events):
+#     messages = []
+#     for event in events:
+#         items = [item for item in event if item != ""]
+#         message = ", ".join(items)
+#         messages.append(message)
+#     return messages
+
+# messages = messages_text(sport_test())
+# for message in messages:
+#     print(message)

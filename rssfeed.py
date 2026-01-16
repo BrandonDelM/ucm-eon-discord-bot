@@ -1,13 +1,13 @@
 from bs4 import BeautifulSoup
-from checksFunctions import is_change, log_changes
+from checksFunctions import is_change, log_changes, get_elements, database_format
 
 #Returns the new events from an rss
-def rss_changes(r, file):
+def rss_changes(r, table):
     soup = BeautifulSoup(r.text, 'xml')
-    items = get_items(soup)
+    items = get_elements(soup, 'item')
     events = create_rss_events_list(items)
-    new_events = is_change(file, events)
-    log_changes(file, events)
+    new_events = is_change(table, events)
+    log_changes(table, events)
     return new_events
 
 def create_rss_events_list(items):
@@ -27,10 +27,5 @@ def create_rss_events_list(items):
             link = item.link.text
         except:
             link = None
-        events.append(f"{title}, {date}, {link}")
+        events.append(database_format("",title,date,"","",link))
     return events
-
-def get_items(soup):
-    if soup.find_all('item'):
-        return soup.find_all('item')
-    return None
