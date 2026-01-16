@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from checksFunctions import get_elements, is_change, log_changes
+from checksFunctions import get_elements, is_change, log_changes, database_format
 
 def youtube_change(r, file):
     soup = BeautifulSoup(r.text, 'xml')
@@ -34,5 +34,5 @@ def create_youtube_video_list(entries):
         except:
             date = None
         
-        videos.append(f"New video posted by **{author}** on *{date}*: {title}. **Watch it here**: {url}")
+        videos.append(database_format(author,title,date,"","",url))
     return videos

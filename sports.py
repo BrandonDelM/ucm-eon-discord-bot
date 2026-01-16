@@ -3,12 +3,12 @@ from checksFunctions import is_change, log_changes, database_format
 
 
 
-def sports_change(file):
+def sports_change(table):
     data = get_sports_data()
     news_data = data['data']
     news = get_sports_news(news_data)
-    new_news = is_change(file, news)
-    log_changes(file, news)
+    new_news = is_change(table, news)
+    log_changes(table, news)
     return new_news
 
 import requests
@@ -44,15 +44,13 @@ def get_sports_data():
     return None
 
 
-from database import *
-def sport_test():
-    data = get_sports_data()
-    news_data = data['data']
-    news = get_sports_news(news_data)
-    new_news = is_change(news,"sports")
-    for new in new_news:
-        print(new)
-    log_changes("sports",news)
-    return new_news
+# from database import *
+# def sport_test():
+#     data = get_sports_data()
+#     news_data = data['data']
+#     news = get_sports_news(news_data)
+#     new_news = is_change("sports",news)
+#     log_changes("sports",news)
+#     return new_news
 
-sport_test()
+# sport_test()

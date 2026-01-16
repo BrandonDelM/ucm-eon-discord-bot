@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup
-from  checksFunctions import is_change, log_changes
+from  checksFunctions import is_change, log_changes, database_format
 
 #Returns the new events from a calendar
-def calendar_changes(r, file, url):
+def calendar_changes(r, table, url):
     url = url[:url.rfind("/")]
     soup  = BeautifulSoup(r.text, 'html.parser')
     calendar = get_calendar(soup)
@@ -10,8 +10,8 @@ def calendar_changes(r, file, url):
 
     events_list = create_calendar_event_list(dates, events, links)
 
-    new = is_change(file, events_list)
-    log_changes(file, events_list)
+    new = is_change(table, events_list)
+    log_changes(table, events_list)
 
     return new
 
@@ -34,5 +34,5 @@ def get_calendar_event_info(soup, url):
 def create_calendar_event_list(dates, events, links):
     event_list = []
     for i in range(len(events)):
-        event_list.append(f"{events[i].get_text()}, {dates[i].get_text()}, {links[i]}")
+        event_list.append(database_format("",events[i],dates[i],"","",links[i]))
     return event_list

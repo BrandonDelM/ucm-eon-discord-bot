@@ -19,7 +19,7 @@ def is_same(events, comparison):
             return True
     return False
 
-def is_change(events,table):
+def is_change(table, events):
     new = []
 
     if not table_exists(table):

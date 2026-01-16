@@ -14,23 +14,23 @@ from youtube import youtube_change
 from handshake import handshake_change
 from sports import sports_change
 
-def check_for_changes(r, file, url, type):
+def check_for_changes(r, table, url, type):
     if type == "calendar":
-        return calendar_changes(r, file, url)
+        return calendar_changes(r, table, url)
     elif type == "rss":
-        return rss_changes(r, file)
+        return rss_changes(r, table)
     elif type == "ics":
-        return ics_change(r, file)
+        return ics_change(r, table)
     elif type == "youtube":
-        return youtube_change(r, file)
+        return youtube_change(r, table)
     elif type == "bluesky":
-        return bluesky_change(file)
+        return bluesky_change(table)
     elif type == "aaiscloud":
-        return aaiscloud_changes(file)
+        return aaiscloud_changes(table)
     elif type == "handshake":
-        return handshake_change(r, file)
+        return handshake_change(r, table)
     elif type == "sports":
-        return sports_change(file)
+        return sports_change(table)
 
 class Client(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -69,7 +69,7 @@ class Client(discord.Client):
             await channel.send("New rounds of update checks is occurring.")
             await asyncio.sleep(3600)
 
-    async def automate_check(self, url, channel, file, type, delay_offset=0):
+    async def automate_check(self, url, channel, table, type, delay_offset=0):
         channel = self.get_channel(channel)
         if channel is None:
             print(f"Error: No channel {channel} for {url}")
@@ -84,7 +84,7 @@ class Client(discord.Client):
                 await channel.send(f"Failure to find {url}")
                 return
             
-            new_events = check_for_changes(r, file, url, type)
+            new_events = check_for_changes(r, table, url, type)
             update_worksheet_logs(self.update_worksheet, new_events, type, url)
 
             if len(new_events) != 0:
@@ -99,9 +99,9 @@ class Client(discord.Client):
     async def get_tasks(self, title, type, offset):
         tasks = []
         worksheet = get_worksheet(self.feed_sheet, title)
-        urls, channels, mentions, files = get_worksheet_columns(worksheet)
+        urls, channels, mentions, tables = get_worksheet_columns(worksheet)
         for i in range(len(urls)):
-            task = self.loop.create_task(self.automate_check(urls[i], channels[i], files[i], type, delay_offset=offset*20))
+            task = self.loop.create_task(self.automate_check(urls[i], channels[i], tables[i], type, delay_offset=offset*20))
             offset += 1
             tasks.append(task)
         return tasks

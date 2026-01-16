@@ -14,9 +14,9 @@ def get_worksheet_columns(worksheet):
     urls = [row[0] for row in rows]
     channels = [int(row[1]) for row in rows]
     mentions = [row[2] for row in rows]
-    files = [row[3] for row in rows]
+    tables = [row[3] for row in rows]
 
-    return urls, channels, mentions, files
+    return urls, channels, mentions, tables
 
 def update_worksheet_logs(worksheet, updates, type, url):
     if len(updates) != 0:
