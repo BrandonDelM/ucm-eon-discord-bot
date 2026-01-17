@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from checksFunctions import is_change, log_changes, database_format
 from blueskyAuth import init_bluesky_client, get_bluesky_feed
 
@@ -21,8 +20,6 @@ def get_bluesky_post_info(feed):
         url  = construct_bluesky_url(post)
         posts.append(database_format(author,text,date,"","",url))
     return posts
-
-# bluesky_change("./bluesky_log.txt")
 
 def construct_bluesky_url(post):
     try:
