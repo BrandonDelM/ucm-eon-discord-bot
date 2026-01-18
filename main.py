@@ -89,6 +89,8 @@ class Client(discord.Client):
             print(f"Checking {type}: {url}")
             r = request(url)
             if r is None:
+                # Corresponds to the #Updates channel
+                channel = self.get_channel(1331494875350171679)
                 await channel.send(f"Failure to find {url}")
                 return
             
