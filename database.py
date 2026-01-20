@@ -67,6 +67,36 @@ def delete_from_table(table_name,id):
     conn.commit()
     conn.close()
 
+def get_all_tables_from_database():
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute(f"SELECT name FROM sqlite_master WHERE type='table'")
+    items = c.fetchall()
+
+    conn.commit()
+    conn.close()
+    return [item[0] for item in items]
+
+def get_all_times_from_table(table_name):
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute(f"SELECT * FROM '{table_name}' WHERE start_time!='' AND start_time IS NOT NULL")
+    items = c.fetchall()
+
+    conn.commit()
+    conn.close()
+    return [item for item in items]
+
+def get_like_rows_from_table(table_name, column, parameter):
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute(f"SELECT * FROM '{table_name}' WHERE {column} LIKE '{parameter}'")
+    items = c.fetchall()
+
+    conn.commit()
+    conn.close()
+    return [item for item in items]
+
 def get_all_rows_from_table(table_name):
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
