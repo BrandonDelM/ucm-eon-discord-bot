@@ -1,4 +1,5 @@
 import discord
+from discord.ext import commands
 import asyncio
 from key import API_KEY
 
@@ -28,18 +29,18 @@ def message_format(events):
     for event in events:
         poster, title, start, end, building, link = event
         if link:
-            message = f":calendar: __New update__: [{title}]({link})\n"
+            message = f"> :calendar: __New update__: **[{title}]({link})**\n"
         else:
-            message = f":calendar: __New update__: {title}\n"
+            message = f"> :calendar: __New update__: **{title}**\n"
         if start:
-            message += f":alarm_clock: Time: {start}"
+            message += f"> :alarm_clock: __Time__: {start}"
             if end:
                 message += f" - {end}"
             message += "\n"
         if building:
-            message += f":school: Location: {building}\n"
+            message += f"> :school: __Location__: {building}\n"
         if poster:
-            message += f":writing_hand:  Posted By: {poster}"
+            message += f"> :writing_hand:  __Posted By__: {poster}"
         messages.append(message)
     return messages
 
@@ -69,25 +70,31 @@ class Client(discord.Client):
         self.update_worksheet = get_worksheet(get_sheet(self.sheets_client, "1CGTzpS3Ie8QTi0HI6xEhTDZoT8j8eRrAcFu-SDcOHpY"), "UPDATES")
 
     async def on_ready(self):
-        print(f'Logged on as {self.user}!')
         self.loop.create_task(self.uc_merced_check())
-        self.loop.create_task(self.updating_message())
-        self.loop.create_task(self.post_todays_event())
-        # self.loop.create_task(self.follow_announcements())
+        # self.loop.create_task(self.post_todays_event())
 
-    async def post_todays_event(self):
-        channel = self.get_channel(1459738347693019188)
-        while not self.is_closed():
-            events = get_today_events()
-            messages = message_format(events)
-            compiled = "**Today's Updates**:\n"
-            for message in messages:
-                if len(compiled + f"{message}\n\n") > 2000:
-                    await channel.send(compiled)
-                    compiled = ""
-                    await asyncio.sleep(20)
-                compiled += f"{message}\n\n"
-            await asyncio.sleep(86400)
+    async def on_message(self, message):
+        if message.author == self.user:
+            return
+
+        if not message.content.startswith('$'):
+            return
+
+        if message.content == "$today":
+            await self.post_todays_event(message.channel)
+
+    async def post_todays_event(self, channel):
+        events = get_today_events()
+        messages = message_format(events)
+        compiled = "**Today's Updates**:\n"
+        for message in messages:
+            if len(compiled + f"{message}\n\n") > 2000:
+                await channel.send(compiled)
+                compiled = ""
+                await asyncio.sleep(20)
+            compiled += f"{message}\n\n"
+        if len(messages) > 0:
+            await channel.send(compiled)
 
     async def automate_check(self, url, channel, table, type, delay_offset=0):
         channel = self.get_channel(channel)
@@ -137,10 +144,6 @@ class Client(discord.Client):
 
     async def uc_merced_check(self):
         await self.wait_until_ready()
-
-        channel = self.get_channel(1331494875350171679)
-        if channel is not None:
-            await channel.send("New rounds of update checks is occurring.")
         tasks = []
         offset = 0
 
@@ -173,6 +176,8 @@ class Client(discord.Client):
 
 intents = discord.Intents.default()
 intents.message_content = True
+bot = commands.Bot(command_prefix='$', intents=intents)
 
 client = Client(intents=intents)
+
 client.run(API_KEY)
