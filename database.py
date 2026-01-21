@@ -53,7 +53,7 @@ def clear_table(table_name):
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
 
-    c.execute(f"DELETE FROM {table_name}")
+    c.execute(f"DELETE FROM '{table_name}'")
     conn.commit()
     conn.close()
 

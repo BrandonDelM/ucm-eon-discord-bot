@@ -6,8 +6,8 @@ from key import API_KEY
 from ucmcalendar import *
 from icscheck import *
 from rssfeed import *
-from checksFunctions import *
 from bluesky import *
+from checksFunctions import *
 from googleSheets import init_sheets_client
 from sheetsFunctions import *
 from aaiscloud import aaiscloud_changes
