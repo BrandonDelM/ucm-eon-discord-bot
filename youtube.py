@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from checksFunctions import get_elements, is_change, log_changes, database_format
 
 def youtube_change(r, file):
-    soup = BeautifulSoup(r.text, 'xml')
+    soup = BeautifulSoup(r, 'xml')
     entries = get_elements(soup, "entry")
     videos = create_youtube_video_list(entries)
     new_videos = is_change(file, videos)

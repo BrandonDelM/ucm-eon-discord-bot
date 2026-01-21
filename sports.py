@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from checksFunctions import is_change, log_changes, database_format
 
 def sports_change(table):
@@ -8,8 +7,6 @@ def sports_change(table):
     new_news = is_change(table, news)
     log_changes(table, news)
     return new_news
-
-import requests
 
 def get_sports_news(news_data):
     news = []

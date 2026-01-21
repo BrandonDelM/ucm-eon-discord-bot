@@ -3,7 +3,7 @@ from checksFunctions import is_change, log_changes, get_elements, database_forma
 
 #Returns the new events from an rss
 def rss_changes(r, table):
-    soup = BeautifulSoup(r.text, 'xml')
+    soup = BeautifulSoup(r, 'xml')
     items = get_elements(soup, 'item')
     events = create_rss_events_list(items)
     new_events = is_change(table, events)
