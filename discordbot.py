@@ -86,8 +86,12 @@ class Client(discord.Client):
         await self.wait_until_ready()
         while not self.is_closed():
             if len(self.updates) > 0:
-                channel, type, url, new_events = self.updates.pop(0)
-                channel = self.get_channel(channel)
+                channelid, type, url, new_events = self.updates.pop(0)
+                channel = self.get_channel(channelid)
+                if channel is None:
+                    errorchannel = self.get_channel(1331494875350171679)
+                    await errorchannel.send(f"Channel {channel} not found")
+                    continue
                 messages = message_format(new_events)
                 compiled = f"**Updates for {type}: {url}**:\n"
                 for message in messages:
@@ -96,10 +100,8 @@ class Client(discord.Client):
                         compiled = ""
                         await asyncio.sleep(1)
                     compiled += f"{message}\n\n"
-                if len(messages) > 0:
+                if compiled:
                     await channel.send(compiled)
-            await channel.send(compiled)
-
             await asyncio.sleep(30)
 
     async def on_message(self, message):
@@ -125,8 +127,8 @@ class Client(discord.Client):
         if len(messages) > 0:
             await channel.send(compiled)
 
-    async def automate_check(self, url, channel, table, type):
-        channel = self.get_channel(channel)
+    async def automate_check(self, url, channelid, table, type):
+        channel = self.get_channel(channelid)
         if channel is None:
             print(f"Error: No channel {channel} for {url}")
             return
@@ -144,7 +146,7 @@ class Client(discord.Client):
             if len(new_events) > 0:
                 messages = messages_text(new_events)
                 update_worksheet_logs(self.update_worksheet, messages, url)
-                self.updates.append((channel, type, url, new_events))
+                self.updates.append((channelid, type, url, new_events))
                 print(f"{len(new_events)} updates found for {url}")
             else:
                 print(f"No changes for {type}: {url}")
