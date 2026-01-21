@@ -13,12 +13,33 @@ from aaiscloud import aaiscloud_changes
 from youtube import youtube_change
 from handshake import handshake_change
 from sports import sports_change
+from dailyevents import get_today_events
 
 def messages_text(events):
     messages = []
     for event in events:
         items = [item for item in event if item and str(item).strip()]
         message = ", ".join(items)
+        messages.append(message)
+    return messages
+
+def message_format(events):
+    messages = []
+    for event in events:
+        poster, title, start, end, building, link = event
+        if link:
+            message = f":calendar: __New update__: [{title}]({link})\n"
+        else:
+            message = f":calendar: __New update__: {title}\n"
+        if start:
+            message += f":alarm_clock: Time: {start}"
+            if end:
+                message += f" - {end}"
+            message += "\n"
+        if building:
+            message += f":school: Location: {building}\n"
+        if poster:
+            message += f":writing_hand:  Posted By: {poster}"
         messages.append(message)
     return messages
 
@@ -51,31 +72,22 @@ class Client(discord.Client):
         print(f'Logged on as {self.user}!')
         self.loop.create_task(self.uc_merced_check())
         self.loop.create_task(self.updating_message())
+        self.loop.create_task(self.post_todays_event())
         # self.loop.create_task(self.follow_announcements())
 
-    async def follow_announcements(self):
-        await self.wait_until_ready()
-
-        clubChannel = self.get_channel(1459382875110510632)
-
-        await clubChannel.follow(destination=client.get_channel(687561274288373785), reason=None)
-        await clubChannel.follow(destination=client.get_channel(1329585146088656937), reason=None)
-        await clubChannel.follow(destination=client.get_channel(1065027452524580945), reason=None)
-        await clubChannel.follow(destination=client.get_channel(1293779923550605395), reason=None)
-        await clubChannel.follow(destination=client.get_channel(1278588924834480179), reason=None)
-        await clubChannel.follow(destination=client.get_channel(1027661922767749170), reason=None)
-        await clubChannel.follow(destination=client.get_channel(1197337900497502258), reason=None)
-        await clubChannel.follow(destination=client.get_channel(1227451469243093072), reason=None)
-        await clubChannel.follow(destination=client.get_channel(895799091240501271), reason=None)
-
-    async def updating_message(self):
-        channel = self.get_channel(1331494875350171679)
-        if channel is None:
-            print(f"Error: No channel {channel} exists")
-            return
+    async def post_todays_event(self):
+        channel = self.get_channel(1459738347693019188)
         while not self.is_closed():
-            await channel.send("New rounds of update checks is occurring.")
-            await asyncio.sleep(3600)
+            events = get_today_events()
+            messages = message_format(events)
+            compiled = "**Today's Updates**:\n"
+            for message in messages:
+                if len(compiled + f"{message}\n\n") > 2000:
+                    await channel.send(compiled)
+                    compiled = ""
+                    await asyncio.sleep(20)
+                compiled += f"{message}\n\n"
+            await asyncio.sleep(86400)
 
     async def automate_check(self, url, channel, table, type, delay_offset=0):
         channel = self.get_channel(channel)
@@ -95,16 +107,22 @@ class Client(discord.Client):
                 return
             
             new_events = check_for_changes(r, table, url, type)
+
+            # A format for the worksheet update file
             messages = messages_text(new_events)
             update_worksheet_logs(self.update_worksheet, messages, url)
 
-            if len(new_events) != 0:
-                new_events_text = f"Changes for {type}: {url}\n"
-                for message in messages:
-                    if len(f"{new_events_text}{message}\n") > 2000:
-                        break
-                    new_events_text += f"{message}\n"
-                await channel.send(new_events_text)
+            # A different format specifically for the discord channel
+            messages = message_format(new_events)
+            compiled = f"**Updates for {type}: {url}**:\n"
+            
+
+            for message in messages:
+                if len(compiled + f"{message}\n\n") > 2000:
+                    await channel.send(compiled)
+                    compiled = ""
+                    await asyncio.sleep(20)
+                compiled += f"{message}\n\n"
             await asyncio.sleep(3600)
 
     async def get_tasks(self, title, type, offset):
@@ -119,6 +137,10 @@ class Client(discord.Client):
 
     async def uc_merced_check(self):
         await self.wait_until_ready()
+
+        channel = self.get_channel(1331494875350171679)
+        if channel is not None:
+            await channel.send("New rounds of update checks is occurring.")
         tasks = []
         offset = 0
 

@@ -3,7 +3,6 @@ from datetime import date
 from date_extractor import extract_dates
 
 def get_today_events():
-    # Needs to get the entire table
     tables = format_table_times(get_all_tables_from_database())
     today = date.today().isoformat()
     events = [formatted for formatted in tables if today in formatted[2]]
