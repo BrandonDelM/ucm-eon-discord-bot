@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from checksFunctions import is_change, log_changes, get_elements, database_format
+import lxml
 
 #Returns the new events from an rss
 def rss_changes(r, table):

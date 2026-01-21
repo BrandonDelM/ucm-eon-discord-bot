@@ -6,6 +6,9 @@ def calendar_changes(r, table, url):
     url = url[:url.rfind("/")]
     soup  = BeautifulSoup(r.text, 'html.parser')
     calendar = get_calendar(soup)
+    if calendar is None:
+        print(f"Error. No calendar found for: {url}")
+        return
     events, dates, links = get_calendar_event_info(calendar, url)
 
     events_list = create_calendar_event_list(dates, events, links)
