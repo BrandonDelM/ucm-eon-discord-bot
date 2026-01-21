@@ -38,5 +38,8 @@ Files are split up for different feeds:
 ---
 ## Future goals 🏃‍♀️🏃‍♂️
 * Use the Google Drive API to store and backup the database onto Google Drive to avoid data corruption.
-* Implement a 'Today's events' functionality that would update the server on events happening that day.
+* Create a github page that host the formatted events for people to see alongside the Discord.
+* Implement a 'Today's events' functionality that would update the server on events happening that day. ✅
 * Implement a RESTful API for other UC Merced student developers to retrieve events in a given time scale.
+* Discord commands to allow students to ask the bot for upcomings events
+* Rework how checks are messages are done. Checks should be done separately and messages are posted in an interval.
