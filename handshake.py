@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from checksFunctions import is_change, log_changes, database_format
 
 def handshake_change(r, table):
-    soup = BeautifulSoup(r.text, "html.parser")
+    soup = BeautifulSoup(r, "html.parser")
     contents = get_contents(soup)
     headers = get_headers(contents)
     events = get_handshake_event_info(headers)
