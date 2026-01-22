@@ -17,6 +17,7 @@ from aaiscloud import aaiscloud_changes
 from youtube import youtube_change
 from handshake import handshake_change
 from sports import sports_change
+from listserv import listserv_change
 
 async def httprequest(url):
     async with aiohttp.ClientSession() as session:
@@ -41,6 +42,8 @@ def check_for_changes(r, table, url, type):
             return handshake_change(r, table)
         case "sports":
             return sports_change(table)
+        case "listserv":
+            return listserv_change(r, table, url)
 
 def messages_text(events):
     messages = []
@@ -178,6 +181,7 @@ class Client(discord.Client):
         tasks.extend(await self.get_tasks("ICS", "ics"))
         tasks.extend(await self.get_tasks("RSS", "rss"))
         tasks.extend(await self.get_tasks("YOUTUBE", "youtube"))
+        tasks.extend(await self.get_tasks("LISTSERV", "listserv"))
 
         await asyncio.gather(*tasks)
 

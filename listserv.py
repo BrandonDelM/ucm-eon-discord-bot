@@ -2,12 +2,14 @@ from bs4 import BeautifulSoup
 import requests
 from checksFunctions import is_change, log_changes, database_format
 
-def listserv_change(r, url, table):
+def listserv_change(r, table, url):
     soup = BeautifulSoup(r, "html.parser")
     email_url = get_archive_link(soup, url)
-    print(email_url)
 
     r = requests.get(email_url)
+    if r is None:
+        print(f"No archive found for {url}")
+        return []
     soup = BeautifulSoup(r.text, "html.parser")
     emails = get_email_info(soup, email_url)
     new_emails = is_change(table, emails)
@@ -37,6 +39,6 @@ def get_email_info(soup, url):
         items.append(database_format("",title,"","","",link))
     return items
 
-url = "https://lists.ucmerced.edu/pipermail/health_scholars/"
-r = requests.get(url)
-listserv_change(r.text, url, "health_scholars_listserv")
+# url = "https://lists.ucmerced.edu/pipermail/health_scholars/"
+# r = requests.get(url)
+# listserv_change(r.text, "health_scholars_listserv", url)

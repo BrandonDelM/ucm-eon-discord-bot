@@ -113,7 +113,7 @@ class Client(discord.Client):
                 await channel.send(f"Failure to find {url}")
                 return
             
-            new_events = check_for_changes(r, table, url, type)
+            new_events = check_for_changes(r.text, table, url, type)
 
             # A format for the worksheet update file
             messages = messages_text(new_events)
