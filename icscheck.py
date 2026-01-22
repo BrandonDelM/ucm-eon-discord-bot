@@ -13,7 +13,7 @@ def ics_change(r, table):
             return new_events
         return None
     except ValueError as e:
-        print(f"Error parsing ICS calendar: {e}")
+        print(f"Error parsing ics calendar: {e}")
         return []
     except Exception as e:
         print(f"Unexpected error in ics_change: {e}")
