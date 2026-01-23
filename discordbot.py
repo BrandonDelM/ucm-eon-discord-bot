@@ -89,14 +89,17 @@ class Client(discord.Client):
         await self.wait_until_ready()
         while not self.is_closed():
             if len(self.updates) > 0:
-                channelid, type, url, new_events = self.updates.pop(0)
+                channelid, type, mention, url, new_events = self.updates.pop(0)
                 channel = self.get_channel(channelid)
                 if channel is None:
                     errorchannel = self.get_channel(1331494875350171679)
                     await errorchannel.send(f"Channel {channel} not found")
                     continue
                 messages = message_format(new_events)
-                compiled = f"**Updates for {type}: {url}**:\n"
+                compiled = ""
+                if mention:
+                    compiled += f"<@&{mention}> "
+                compiled += f"**Updates for {type}: {url}**:\n"
                 for message in messages:
                     if len(compiled + f"{message}\n\n") > 2000:
                         await channel.send(compiled)
@@ -130,7 +133,7 @@ class Client(discord.Client):
         if len(messages) > 0:
             await channel.send(compiled)
 
-    async def automate_check(self, url, channelid, table, type):
+    async def automate_check(self, url, channelid, mention, table, type):
         channel = self.get_channel(channelid)
         if channel is None:
             print(f"Error: No channel {channel} for {url}")
@@ -146,10 +149,14 @@ class Client(discord.Client):
             
             new_events = check_for_changes(r, table, url, type)
 
+            if new_events is None:
+                print(f"new_events returned with a none type: {url}")
+                return
+
             if len(new_events) > 0:
                 messages = messages_text(new_events)
                 update_worksheet_logs(self.update_worksheet, messages, url)
-                self.updates.append((channelid, type, url, new_events))
+                self.updates.append((channelid, type, mention, url, new_events))
                 print(f"{len(new_events)} updates found for {url}")
             else:
                 print(f"No changes for {type}: {url}")
@@ -161,7 +168,7 @@ class Client(discord.Client):
         worksheet = get_worksheet(self.feed_sheet, title)
         urls, channels, mentions, tables = get_worksheet_columns(worksheet)
         for i in range(len(urls)):
-            task = self.loop.create_task(self.automate_check(urls[i], channels[i], tables[i], type))
+            task = self.loop.create_task(self.automate_check(urls[i], channels[i], mentions[i], tables[i], type))
             tasks.append(task)
         return tasks
 
@@ -169,12 +176,12 @@ class Client(discord.Client):
         await self.wait_until_ready()
         tasks = []
 
-        tasks.append(self.loop.create_task(self.automate_check("https://bsky.app/profile/starringon.bsky.social/feed/aaajx5bhjuexc", 1459382789060431924, "bluesky", "bluesky")))
+        tasks.append(self.loop.create_task(self.automate_check("https://bsky.app/profile/starringon.bsky.social/feed/aaajx5bhjuexc", 1459382789060431924, "", "bluesky", "bluesky")))
 
-        tasks.append(self.loop.create_task(self.automate_check("https://www.aaiscloud.com/UCAMerced/default.aspx", 1459661967336804464, "aaiscloud", "aaiscloud")))
+        tasks.append(self.loop.create_task(self.automate_check("https://www.aaiscloud.com/UCAMerced/default.aspx", 1459661967336804464, "", "aaiscloud", "aaiscloud")))
 
         #UC Merced Bobcats Sports News
-        tasks.append(self.loop.create_task(self.automate_check("https://www.ucmerced.edu/athletics-and-recreation", 1461569361973215334, "sports", "sports")))
+        tasks.append(self.loop.create_task(self.automate_check("https://www.ucmerced.edu/athletics-and-recreation", 1461569361973215334, "", "sports", "sports")))
 
         tasks.extend(await self.get_tasks("HANDSHAKE", "handshake"))
         tasks.extend(await self.get_tasks("CALENDAR", "calendar"))
