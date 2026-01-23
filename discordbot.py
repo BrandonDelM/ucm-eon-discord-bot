@@ -19,12 +19,7 @@ from handshake import handshake_change
 from sports import sports_change
 from listserv import listserv_change
 
-async def httprequest(url):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            return await response.text()
-
-def check_for_changes(r, table, url, type):
+async def check_for_changes(r, table, url, type):
     match type:
         case "calendar":
             return calendar_changes(r, table, url)
@@ -43,7 +38,7 @@ def check_for_changes(r, table, url, type):
         case "sports":
             return sports_change(table)
         case "listserv":
-            return listserv_change(r, table, url)
+            return await listserv_change(r, table, url)
 
 def messages_text(events):
     messages = []
@@ -80,6 +75,7 @@ class Client(discord.Client):
         self.feed_sheet = get_sheet(self.sheets_client, "1ras1Fi3I2b_6a8OxEhbHW1LUiDe_3ZH1ou-AlMUYoUA")
         self.update_worksheet = get_worksheet(get_sheet(self.sheets_client, "1CGTzpS3Ie8QTi0HI6xEhTDZoT8j8eRrAcFu-SDcOHpY"), "UPDATES")
         self.updates = []
+        self.lock = asyncio.Lock()
 
     async def on_ready(self):
         self.loop.create_task(self.uc_merced_check())
@@ -88,27 +84,28 @@ class Client(discord.Client):
     async def post_updates(self):
         await self.wait_until_ready()
         while not self.is_closed():
-            if len(self.updates) > 0:
-                channelid, type, mention, url, new_events = self.updates.pop(0)
-                channel = self.get_channel(channelid)
-                if channel is None:
-                    errorchannel = self.get_channel(1331494875350171679)
-                    await errorchannel.send(f"Channel {channel} not found")
-                    continue
-                messages = message_format(new_events)
-                compiled = ""
-                if mention:
-                    compiled += f"<@&{mention}> "
-                compiled += f"**Updates for {type}: {url}**:\n"
-                for message in messages:
-                    if len(compiled + f"{message}\n\n") > 2000:
-                        await channel.send(compiled)
+            async with self.lock:
+                if len(self.updates) > 0:
+                    channelid, type, mention, url, new_events = self.updates.pop(0)
+                    channel = self.get_channel(channelid)
+                    if channel is None:
+                        errorchannel = self.get_channel(1331494875350171679)
+                        await errorchannel.send(f"Channel {channel} not found")
+                    else:
+                        messages = message_format(new_events)
                         compiled = ""
-                        await asyncio.sleep(1)
-                    compiled += f"{message}\n\n"
-                if compiled:
-                    await channel.send(compiled)
-            await asyncio.sleep(30)
+                        if mention:
+                            compiled += f"<@&{mention}> "
+                        compiled += f"**Updates for {type}: {url}**:\n"
+                        for message in messages:
+                            if len(compiled + f"{message}\n\n") > 2000:
+                                await channel.send(compiled)
+                                compiled = ""
+                                await asyncio.sleep(1)
+                            compiled += f"{message}\n\n"
+                        if compiled.strip():
+                            await channel.send(compiled)
+            await asyncio.sleep(5)
 
     async def on_message(self, message):
         if message.author == self.user:
@@ -121,7 +118,7 @@ class Client(discord.Client):
             await self.post_todays_event(message.channel)
 
     async def post_todays_event(self, channel):
-        events = get_today_events()
+        events = await asyncio.to_thread(get_today_events)
         messages = message_format(events)
         compiled = "**Today's Updates**:\n"
         for message in messages:
@@ -140,24 +137,28 @@ class Client(discord.Client):
             return
 
         while not self.is_closed():
-            r = await httprequest(url)
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as response:
+                    r = await response.text()
+            
             if r is None:
                 # Corresponds to the #Updates channel
                 channel = self.get_channel(1331494875350171679)
                 await channel.send(f"Failure to find {url}")
                 return
             
-            new_events = check_for_changes(r, table, url, type)
+            new_events = await check_for_changes(r, table, url, type)
 
             if new_events is None:
                 print(f"new_events returned with a none type: {url}")
                 return
 
             if len(new_events) > 0:
-                messages = messages_text(new_events)
-                update_worksheet_logs(self.update_worksheet, messages, url)
-                self.updates.append((channelid, type, mention, url, new_events))
-                print(f"{len(new_events)} updates found for {url}")
+                async with self.lock:
+                    messages = messages_text(new_events)
+                    await asyncio.to_thread(update_worksheet_logs, self.update_worksheet, messages, url)
+                    self.updates.append((channelid, type, mention, url, new_events))
+                    print(f"{len(new_events)} updates found for {url}")
             else:
                 print(f"No changes for {type}: {url}")
             
@@ -165,8 +166,8 @@ class Client(discord.Client):
 
     async def get_tasks(self, title, type):
         tasks = []
-        worksheet = get_worksheet(self.feed_sheet, title)
-        urls, channels, mentions, tables = get_worksheet_columns(worksheet)
+        worksheet = await asyncio.to_thread(get_worksheet, self.feed_sheet, title)
+        urls, channels, mentions, tables = await asyncio.to_thread(get_worksheet_columns, worksheet)
         for i in range(len(urls)):
             task = self.loop.create_task(self.automate_check(urls[i], channels[i], mentions[i], tables[i], type))
             tasks.append(task)

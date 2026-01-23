@@ -1,16 +1,25 @@
 from bs4 import BeautifulSoup
 import requests
 from checksFunctions import is_change, log_changes, database_format
+import aiohttp
 
-def listserv_change(r, table, url):
+async def listserv_change(r, table, url):
     soup = BeautifulSoup(r, "html.parser")
     email_url = get_archive_link(soup, url)
 
-    r = requests.get(email_url)
-    if r is None:
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(email_url) as response:
+                emails_text = await response.text()
+    except Exception as e:
+        print(f"Exception for {url}: {e}")
+        return []
+    
+    if emails_text is None:
         print(f"No archive found for {url}")
         return []
-    soup = BeautifulSoup(r.text, "html.parser")
+    
+    soup = BeautifulSoup(emails_text, "html.parser")
     emails = get_email_info(soup, email_url)
     new_emails = is_change(table, emails)
     log_changes(table, emails)

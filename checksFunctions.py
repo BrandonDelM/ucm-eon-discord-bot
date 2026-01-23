@@ -14,10 +14,7 @@ def request(url):
     return None
 
 def is_same(events, comparison):
-    for event in events:
-        if event == comparison:
-            return True
-    return False
+    return comparison in events
 
 def is_change(table, events):
     new = []
@@ -28,9 +25,10 @@ def is_change(table, events):
         return events
     
     table_items = get_all_rows_from_table(table)
+    table_set = set(table_items) if table_items else set()
 
     for event in events:
-        if not is_same(table_items, event):
+        if event not in table_set:
             new.append(event)
     return new
 
