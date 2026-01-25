@@ -13,18 +13,16 @@ def request(url):
         return r
     return None
 
-def is_same(events, comparison):
-    return comparison in events
-
 def is_change(table, events):
     new = []
 
-    if not table_exists(table):
-        create_table(table)
-        add_many_to_table(events,table)
-        return events
+    create_table(table)
     
     table_items = get_all_rows_from_table(table)
+    if not table_items:
+        add_many_to_table(events,table)
+        return events
+
     table_set = set(table_items) if table_items else set()
 
     for event in events:
@@ -33,8 +31,7 @@ def is_change(table, events):
     return new
 
 def log_changes(table, events):
-    if not table_exists(table):
-        create_table(table)
+    create_table(table)
     
     clear_table(table)
     add_many_to_table(events,table)

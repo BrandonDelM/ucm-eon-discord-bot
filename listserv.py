@@ -47,7 +47,3 @@ def get_email_info(soup, url):
         link = f"{url}{html}"
         items.append(database_format("",title,"","","",link))
     return items
-
-# url = "https://lists.ucmerced.edu/pipermail/health_scholars/"
-# r = requests.get(url)
-# listserv_change(r.text, "health_scholars_listserv", url)

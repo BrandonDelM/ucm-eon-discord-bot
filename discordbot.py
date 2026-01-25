@@ -36,7 +36,7 @@ async def check_for_changes(r, table, url, type):
         case "handshake":
             return handshake_change(r, table)
         case "sports":
-            return sports_change(table)
+            return await sports_change(table)
         case "listserv":
             return await listserv_change(r, table, url)
 
@@ -139,7 +139,14 @@ class Client(discord.Client):
         while not self.is_closed():
             async with aiohttp.ClientSession() as session:
                 async with session.get(url) as response:
-                    r = await response.text()
+                    if response.status != 200:
+                        print(f"Response returned with a status {response.status} for the url {url}")
+                        return None
+                    try:
+                        r = await response.text(encoding=None)
+                    except (UnicodeDecodeError, LookupError):
+                        content = await response.read()
+                        return content.decode('utf-8', errors='replace')
             
             if r is None:
                 # Corresponds to the #Updates channel
@@ -177,12 +184,12 @@ class Client(discord.Client):
         await self.wait_until_ready()
         tasks = []
 
-        tasks.append(self.loop.create_task(self.automate_check("https://bsky.app/profile/starringon.bsky.social/feed/aaajx5bhjuexc", 1459382789060431924, "", "bluesky", "bluesky")))
+        tasks.append(self.loop.create_task(self.automate_check("https://bsky.app/profile/starringon.bsky.social/feed/aaajx5bhjuexc", 1459382789060431924, "1464070916181983386", "bluesky", "bluesky")))
 
-        tasks.append(self.loop.create_task(self.automate_check("https://www.aaiscloud.com/UCAMerced/default.aspx", 1459661967336804464, "", "aaiscloud", "aaiscloud")))
+        tasks.append(self.loop.create_task(self.automate_check("https://www.aaiscloud.com/UCAMerced/default.aspx", 1459661967336804464, "1464070766944321769", "aaiscloud", "aaiscloud")))
 
         #UC Merced Bobcats Sports News
-        tasks.append(self.loop.create_task(self.automate_check("https://www.ucmerced.edu/athletics-and-recreation", 1461569361973215334, "", "sports", "sports")))
+        tasks.append(self.loop.create_task(self.automate_check("https://www.ucmerced.edu/athletics-and-recreation", 1461569361973215334, "1464070877829398659", "sports", "sports")))
 
         tasks.extend(await self.get_tasks("HANDSHAKE", "handshake"))
         tasks.extend(await self.get_tasks("CALENDAR", "calendar"))

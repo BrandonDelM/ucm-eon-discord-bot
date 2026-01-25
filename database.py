@@ -3,23 +3,13 @@ import sqlite3
 def create_database():
     conn = sqlite3.connect("database.db")
 
-def table_exists(table_name):
-    conn = sqlite3.connect("database.db")
-    c = conn.cursor()
-
-    c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table_name,))
-    item_check = c.fetchone()
-    if item_check is not None:
-        return True
-    return False
-
 
 def create_table(table_name):
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
 
     c.execute(f"""
-        CREATE TABLE "{table_name}" (
+        CREATE TABLE IF NOT EXISTS "{table_name}" (
             poster text,
             title text,
             start_time text,

@@ -1,7 +1,8 @@
 from checksFunctions import is_change, log_changes, database_format
+import aiohttp
 
-def sports_change(table):
-    data = get_sports_data()
+async def sports_change(table):
+    data = await get_sports_data()
     news_data = data['data']
     news = get_sports_news(news_data)
     new_news = is_change(table, news)
@@ -28,36 +29,27 @@ def get_sports_news(news_data):
         news.append(database_format("",title,date,"","",link))
     return news
 
-import requests
-def get_sports_data():
+async def get_sports_data():
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
     }
     url = "https://ucmercedbobcats.com/services/archives.ashx/stories?index=1&page_size=30&sport=0&season=0"
-    response = requests.get(url, headers=headers)
-    if response.status_code ==  200:
-        return response.json()
-    return None
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                if response.status ==  200:
+                    return await response.json()
+                else:
+                    print(f"Sports couldn't retrieved the new news with status {response.status}")
+                    return None
+    except Exception as e:
+        print(f"Exception for {url}: {e}")
+        return None
 
 
-# from database import *
-# def sport_test():
-#     data = get_sports_data()
-#     news_data = data['data']
-#     news = get_sports_news(news_data)
-#     delete_from_table("sports",len(news))
-#     new_news = is_change("sports",news)
-#     log_changes("sports",news)
-#     return new_news
+# async def sport_test():
+#     data = await get_sports_data()
+#     print(data)
 
-# def messages_text(events):
-#     messages = []
-#     for event in events:
-#         items = [item for item in event if item != ""]
-#         message = ", ".join(items)
-#         messages.append(message)
-#     return messages
-
-# messages = messages_text(sport_test())
-# for message in messages:
-#     print(message)
+# import asyncio
+# asyncio.run(sport_test())
