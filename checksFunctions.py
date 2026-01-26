@@ -37,12 +37,4 @@ def log_changes(table, events):
     add_many_to_table(events,table)
 
 def database_format(poster="", title="", start="", end="", building="", link=""):
-    """""Format so I don't forget:
-    poster, 
-    title, 
-    start, 
-    end, 
-    building, 
-    link
-    """
     return (poster,title,start,end,building,link)
