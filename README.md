@@ -18,7 +18,7 @@ Files are split up for different feeds:
 * **rssfeed.py** monitors various feeds in an RSS format, including blogs, websites, and mailing lists.
 * **aaiscloud.py** uses the aaiscloud RESTful API to obtain the daily events.
 * **bluesky.py** checks the created UC Merced feed for new posts on BlueSky.
-* **handshake.py** was specifically made for the Student Career Center's Handshake feed, but has been integrated into other niche cases of event monitoring.
+* **newsfeed.py** was specifically made for the Student Career Center's Handshake feed, but has been integrated into monitoring news feeds.
 * **sports.py** checks for news related to the UC Merced athletic news, using the RESTful API for news.
 
 ---

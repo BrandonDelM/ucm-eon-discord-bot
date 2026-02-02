@@ -12,7 +12,7 @@ from googleSheets import init_sheets_client
 from sheetsFunctions import *
 from aaiscloud import aaiscloud_changes
 from youtube import youtube_change
-from handshake import handshake_change
+from newsfeed import newsfeed_change
 from sports import sports_change
 from dailyevents import get_today_events
 
@@ -57,8 +57,8 @@ def check_for_changes(r, table, url, type):
         return bluesky_change(table)
     elif type == "aaiscloud":
         return aaiscloud_changes(table)
-    elif type == "handshake":
-        return handshake_change(r, table)
+    elif type == "newsfeed":
+        return newsfeed_change(r, table)
     elif type == "sports":
         return sports_change(table)
 
@@ -157,7 +157,7 @@ class Client(discord.Client):
         tasks.append(self.loop.create_task(self.automate_check("https://www.ucmerced.edu/athletics-and-recreation", 1461569361973215334, "sports", "sports", offset)))
         offset = len(tasks)
 
-        tasks.extend(await self.get_tasks("HANDSHAKE", "handshake", offset))
+        tasks.extend(await self.get_tasks("HANDSHAKE", "newsfeed", offset))
         offset = len(tasks)
 
         tasks.extend(await self.get_tasks("CALENDAR", "calendar", offset))

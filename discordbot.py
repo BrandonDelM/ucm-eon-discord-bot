@@ -15,7 +15,7 @@ from rssfeed import rss_changes
 from bluesky import bluesky_change
 from aaiscloud import aaiscloud_changes
 from youtube import youtube_change
-from handshake import handshake_change
+from newsfeed import newsfeed_change
 from sports import sports_change
 from listserv import listserv_change
 
@@ -33,8 +33,8 @@ async def check_for_changes(r, table, url, type):
             return bluesky_change(table)
         case "aaiscloud":
             return aaiscloud_changes(table)
-        case "handshake":
-            return handshake_change(r, table)
+        case "newsfeed":
+            return newsfeed_change(r, table, url)
         case "sports":
             return await sports_change(table)
         case "listserv":
@@ -191,7 +191,7 @@ class Client(discord.Client):
         #UC Merced Bobcats Sports News
         tasks.append(self.loop.create_task(self.automate_check("https://www.ucmerced.edu/athletics-and-recreation", 1461569361973215334, "1464070877829398659", "sports", "sports")))
 
-        tasks.extend(await self.get_tasks("HANDSHAKE", "handshake"))
+        tasks.extend(await self.get_tasks("HANDSHAKE", "newsfeed"))
         tasks.extend(await self.get_tasks("CALENDAR", "calendar"))
         tasks.extend(await self.get_tasks("ICS", "ics"))
         tasks.extend(await self.get_tasks("RSS", "rss"))
