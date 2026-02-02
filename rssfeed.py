@@ -17,9 +17,9 @@ def rss_changes(r, table):
 def create_rss_events_list(items):
     events = []
     for item in items:
-        poster = get_element(item, "dc:creator").get_text(strip=True)
-        title = get_element(item, "title").get_text()
-        date = get_element(item, "pubDate").get_text()
-        link = get_element(item, "link").get_text()
-        events.append(database_format(poster,title,date,"","",link))
+        poster = get_element(item, "dc:creator").get_text(strip=True) if get_element(item, "dc:creator") is not None else None
+        title = get_element(item, "title").get_text() if get_element(item, "title").get_text() is not None else None
+        start = get_element(item, "pubDate").get_text() if get_element(item, "pubDate").get_text() is not None else None
+        url = get_element(item, "link").get_text() if get_element(item, "link").get_text() is not None else None
+        events.append(database_format(poster,title,start,"","",url))
     return events
