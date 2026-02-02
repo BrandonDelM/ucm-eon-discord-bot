@@ -80,7 +80,7 @@ def get_all_times_from_table(table_name):
 def get_like_rows_from_table(table_name, column, parameter):
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
-    c.execute(f"SELECT * FROM '{table_name}' WHERE {column} LIKE '{parameter}'")
+    c.execute(f"SELECT * FROM '{table_name}' WHERE {column} LIKE ? ORDER BY '{table_name}' DESC", (parameter,))
     items = c.fetchall()
 
     conn.commit()

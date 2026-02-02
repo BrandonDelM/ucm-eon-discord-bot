@@ -169,7 +169,7 @@ class Client(discord.Client):
             else:
                 print(f"No changes for {type}: {url}")
             
-            await asyncio.sleep(3600)
+            await asyncio.sleep(1800)
 
     async def get_tasks(self, title, type):
         tasks = []

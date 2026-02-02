@@ -7,6 +7,11 @@ def get_elements(soup, element_name):
         return soup.find_all(element_name)
     return None
 
+def get_element(soup, element_name):
+    if soup.find(element_name):
+        return soup.find(element_name)
+    return None
+
 def request(url):
     r = requests.get(url)
     if r.status_code == 200:
