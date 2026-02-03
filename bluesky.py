@@ -13,11 +13,15 @@ def bluesky_change(table):
 
 def get_bluesky_post_info(feed):
     posts = []
+    seen = []
     for post in feed:
+        url  = construct_bluesky_url(post)
+        if url in seen:
+            continue
+        seen.append(url)
         author = post.post.author.handle
         text = f"{post.post.record.text.replace('\n','')}"
         date = post.post.record.created_at
-        url  = construct_bluesky_url(post)
         posts.append(database_format(author,text,date,"","",url))
     return posts
 

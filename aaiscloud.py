@@ -18,7 +18,9 @@ def get_aaiscloud_event_info(events_data):
         start = get_start_date(event)
         end = get_end_date(event)
         building = get_building(event)
-        events.append(database_format(instructor,name,start,end,building,""))
+        id = event[0]
+        url  = f"https://www.aaiscloud.com/UCAMerced/~api/hover/geteventcontentforeventmeeting/{id}"
+        events.append(database_format(instructor,name,start,end,building,url))
     return events
 
 def get_aaiscloud_events():
@@ -43,3 +45,12 @@ def get_end_date(data):
 
 def get_building(data):
     return data[7]
+
+# def aaiscloud_test():
+#     data = get_aaiscloud_events()
+#     events_data = data['data']
+#     events = get_aaiscloud_event_info(events_data)
+#     for event in events[:5]:
+#         print(event)
+
+# aaiscloud_test()

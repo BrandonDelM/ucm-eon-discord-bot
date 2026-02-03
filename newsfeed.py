@@ -30,16 +30,3 @@ def get_titles(header):
 def get_url(header, url):
     page_url = url[:url.rfind("/")]
     return f"{page_url}{header.find("a").get("href")}"
-
-from database import *
-def newsfeed_change_test(r, url):
-    soup = BeautifulSoup(r.text, "html.parser")
-    contents = get_contents(soup)
-    headers = get_headers(contents)
-    events = get_newsfeed_event_info(headers, url)
-    for event in events:
-        print(event)
-
-import requests
-r = requests.get("https://dfa.ucmerced.edu/news")
-newsfeed_change_test(r, "https://dfa.ucmerced.edu/news")
